@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+<body>
+    <header>
+        <div class="navbar">
+            <img src="/static/Assets/logo.png" class="logo">
+            <a href="#">
+                <button class="nav-button">
+                    <i class="material-icons md-3">explore</i><br>
+                    <span>Explore</span>
+                </button>
+            </a>
+            <a href="/static/hotel.html">
+                <button class="nav-button">
+                    <i class="material-icons md-3">location_city</i><br>
+                    <span>Hotels</span>
+                </button>
+            </a>
+            <a href="#">
+                <button class="nav-button">
+                    <i class="material-icons md-3">flight</i><br>
+                    <span>Flights</span>
+                </button>
+            </a>
+        </div>
+    </header>
+    <div>
+        <form>
+            <label for="Trip-Type">Trip Type:</label>
+            <select id="Trip-Type" name="Trip-Type" onchange="selectoperation()">
+                <option value="One-Way">One Way</option>
+                <option value="Round-Trip">Round Trip</option>
+                <option value="Multi-City">Multi City</option>
+            </select><br>
+            <from-to-depart id="1"></from-to-depart>
+            <from-to-depart class="second" id="2"></from-to-depart>
+            <from-to-depart class="second" id="3"></from-to-depart>
+            <from-to-depart class="second" id="4"></from-to-depart>
+            <from-to-depart class="second" id="5"></from-to-depart>
+            <label class="return" for="Return" id="Return">Return : </label>
+            <input class="return" type="date" id="Return" name="Return">
+            <label class="adult" for="Adult" id="Adult">Adult : </label>
+            <input class="adult" type="number" id="Adult" name="Adult" min="0" max="5">
+            <label class="children" for="traveller type" id="Children">Children : </label>
+            <input class="children" type="number" id="Children" name="Children" min="0" max="5">
+            <button class="search" onclick="">Search</button>
+        </form>
+    </div>
+    
+    <script src="static/config.js" type="text/javascript"></script>
+    <script src="static/operation.js" type="text/javascript"></script>
+    <script src="static/amadeus/api.js" type="text/javascript"></script>
+    <script src="static/components/FromToDepart.js"></script>
+    
+</body>
+
+</html>

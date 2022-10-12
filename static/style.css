@@ -1,0 +1,40 @@
+header{
+    background-color: black;
+}
+.logo{
+    width: fit-content;
+    height: 6vw;
+}
+.navbar{
+    width: 100%;
+    display: inline-block;
+}
+.navbar a{
+    float:right;
+    padding:0.5vw;
+}
+
+.material-icons{
+    color:#66D3FA;
+}
+.material-icons.md-3{font-size: 3vw;}
+.nav-button{
+    background-color: black;
+    border-width: 0px;
+    color:#66D3FA
+}
+
+
+
+form{
+    display: block;
+}
+label{
+    display: block;
+}
+.second{
+    display:none;
+}
+.return{
+    display:none;
+}
