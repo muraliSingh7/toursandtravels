@@ -1,12 +1,12 @@
 const template = document.createElement("template");
 template.innerHTML = `
-                    <link rel="stylesheet" href="static/components/style.css">
+                    <link rel="stylesheet" href="static/components/FromtoDepart.css">
                     <div>
-                        <label for="from" class="from">From : </label>
+                        <label for="from" id="from" class="fromtodepartlabel">From : </label>
                         <input type="text" class="from" name="From">
-                        <label for="to" class="to">To : </label>
+                        <label for="to" id="to" class="fromtodepartlabel">To : </label>
                         <input type="text" class="to" name="To">
-                        <label for="depart" class="depart">Depart : </label>
+                        <label for="depart" id="depart" class="fromtodepartlabel">Depart : </label>
                         <input type="date" class="depart" name="Depart">
                     </div>`;
 class FromToDepart extends HTMLElement {

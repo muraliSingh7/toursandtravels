@@ -1,0 +1,23 @@
+div{
+    display: none;
+    height:auto;
+    width:fit-content;
+    color: blue;
+    font-size: 20px;
+    font-family: Georgia, serif;
+}
+.fromtodepartlabel{
+    display: inline-block;
+}
+.from{
+    display:inline-block;
+    margin:5px 20px 5px 5px;
+}
+.to{
+    display:inline-block;
+    margin:5px 20px 5px 5px;
+}
+.depart{
+    display: inline-block;
+    margin:5px 20px 5px 5px;
+}

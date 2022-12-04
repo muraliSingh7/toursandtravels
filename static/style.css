@@ -1,4 +1,4 @@
-header{
+.header{
     background-color: black;
 }
 .logo{
@@ -24,17 +24,81 @@ header{
     color:#66D3FA
 }
 
+.boxform{
+    box-shadow: 0px 0px 2px 2px blue;
+    padding:20px 20px;   
+}
 
-
-form{
+.form{
     display: block;
 }
-label{
-    display: block;
+
+.triptype{
+    color:blue;
+    margin:1px;
 }
-.second{
+.triptypelabels{
+    margin-right: 50px;
+    display: inline;
+    color:blue;
+    font-size: 20px;
+    font-family: Georgia, serif;
+}
+.labels{
+    display: inline;
+    color:blue;
+    font-size: 20px;
+    font-family: Georgia, serif;
+}
+.add{
+    display:none;
+    color:blue;
+    background-color: white;
+    border-radius:50%;
+    border-color: blue;
+}
+.delete{
+    display:none;
+    color:blue;
+    background-color: white;
+    border-radius:50%;
+    border-color: blue;
+}
+.returndate{
+    display:none;
+    color:blue;
+    font-size: 20px;
+    font-family: Georgia, serif;
+}
+.returninput{
     display:none;
 }
-.return{
+.adult{
     display:none;
+    color:blue;
+    font-size: 20px;
+    font-family: Georgia, serif;
+}
+.adultinput{
+    display:none;
+    margin-right: 155px;
+    
+}
+.child{
+    display:none;
+    color:blue;
+    font-size: 20px;
+    font-family: Georgia, serif;
+}
+.childinput{
+    display:none;
+}
+
+.search{
+    margin:5px 0px 5px 0px;
+    display:none;
+    font-size: 20px;
+    padding:5px 10px;
+    background-color: blue;
+    
 }
