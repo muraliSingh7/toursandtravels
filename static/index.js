@@ -1,3 +1,9 @@
+import {getTripType} from './commonfunctions/triptype.js';
+import {oneWaySearch,roundTripSearch,multiCitySearch} from '../server/routes/flightoffers.js'
+import {flightCardCreation} from './views/tripsearchresult.js';
+//import { sortingElement } from './views/tripsearchresult.js';
+
+
 async function AirportSearch(query){
     console.log(query);
     var response=await fetch(`http://127.0.0.1:3000/airportsearch/${query}`)
@@ -8,51 +14,6 @@ async function AirportSearch(query){
 
 
 
-function OneWaySearch(payload) {
-    fetch(`http://127.0.0.1:3000/flights/one-way/${payload.load1.from}/${payload.load1.to}/${payload.load1.departdate}/${payload.adult}/${payload.child}`)
-        .then((response) => {
-            return response.json();
-        }).then((data) => {
-            //console.log(data);
-            FlightCardCreation(data,payload.load1.from,payload.load1.to);
-        });
-        
-
-}
-
-
-
-function RoundTripSearch(payload) {
-    fetch(`http://127.0.0.1:3000/flights/round-trip/${payload.load1.from}/${payload.load1.to}/${payload.load1.departdate}/${payload.returndate}/${payload.adult}/${payload.child}`)
-        .then((response) => {
-            return response.json();
-        }).then((data) => {
-            console.log(data);
-        })
-}
-
-
-
-function MultiCitySearch(payload) {
-    var URL=payload.adult+'/'+payload.child;
-    for(i=1;i<=5;i++){
-        if(payload.hasOwnProperty('load'+i) && payload['load'+i].from!==undefined && payload['load'+i].to!==undefined && payload['load'+i].departdate!==undefined ){
-            URL+='/'+payload['load'+i].from+'/'+payload['load'+i]['to']+'/'+payload['load'+i]['departdate'];
-        }
-    }
-    
-    console.log(URL);
-
-    fetch(`http://127.0.0.1:3000/flights/multi-city/`+URL)
-        .then((response) => {
-            return response.json();
-        }).then((data) => {
-            console.log(data);
-        });
-
-}
-
-
 var iatacodefetchtime=Date.now();
 
 
@@ -61,11 +22,11 @@ addEventListener('DOMContentLoaded', (event) => {
     /*var fromtodepart=document.querySelector("[from-to-depart=from-to-depart_1]");
     fromtodepart.shadowRoot.querySelector("input.from").addEventListener("input",(event)=>{
         console.log(fromtodepart.shadowRoot.querySelector("input.from").value);
-        //console.log(fromtodepart.shadowRoot.querySelector("input.to").value);
+        console.log(fromtodepart.shadowRoot.querySelector("input.to").value);
         AirportSearch(fromtodepart.shadowRoot.querySelector("input.from"));
-        //AirportSearch(fromtodepart.shadowRoot.querySelector("input.to"));
+        AirportSearch(fromtodepart.shadowRoot.querySelector("input.to"));
     });*/
-    var fromtodepart=document.querySelector('[from-to-depart=from-to-depart_1]').shadowRoot.querySelector("input.from");
+    /*var fromtodepart=document.querySelector('[from-to-depart=from-to-depart_1]').shadowRoot.querySelector("input.from");
     fromtodepart.addEventListener("input",function(e){
         var iatacode=fromtodepart.value;
         if(iatacode!=''){
@@ -80,7 +41,7 @@ addEventListener('DOMContentLoaded', (event) => {
             },1000);
             
         }
-    })
+    })*/
     
     
     /*for(var i=1;i<=5;i++){
@@ -91,91 +52,67 @@ addEventListener('DOMContentLoaded', (event) => {
         }
     }*/
     
-    // var fromtodepart=document.querySelectorAll("from-to-depart");
-    // var form = document.querySelector("#flight-search");
-    // form.addEventListener("submit", function (event) {
-    //     event.preventDefault();
-    //     var payload = {
-    //         "load1": {
-    //             "from": document.querySelector("#from-to-depart_1").shadowRoot.querySelector("input.from").value,
-    //             "to": document.querySelector("#from-to-depart_1").shadowRoot.querySelector("input.to").value,
-    //             "departdate": document.querySelector("#from-to-depart_1").shadowRoot.querySelector("input.depart").value,
-    //         }, 
-    //         "adult": document.querySelector("input.adult").value,
-    //         "child": document.querySelector("input.children").value,
-    //         load1:{
-    //             from:'SYD',
-    //             to:'BYK',
-    //             departdate:'2022-12-15'
-    //         },
-    //         adult:1,
-    //         child:1
-    //     };
+    var form = document.querySelector("#flight-search");
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        var payload = {
+            /*"load1": {
+                "from": document.querySelector("#from-to-depart_1").shadowRoot.querySelector("input.from").value,
+                "to": document.querySelector("#from-to-depart_1").shadowRoot.querySelector("input.to").value,
+                "departdate": document.querySelector("#from-to-depart_1").shadowRoot.querySelector("input.depart").value,
+            }, 
+            "adult": document.querySelector("input.adult").value,
+            "child": document.querySelector("input.children").value,*/
+            "load0":{
+                "from":'LAX',
+                "to":'ORD',
+                "departdate":'2023-01-01'
+            },
+            "adult":1,
+            "child":1
+        };
+
         
-    //     if (document.querySelector("select").value == "One-Way") {
-            
-    //         //console.log("Payload: "+payload);
-            
-    //         OneWaySearch(payload);
-    //     } else if (document.querySelector("select").value == "Round-Trip") {
-    //         //payload["returndate"]=document.querySelector("input.returndate").value;
-    //         payload["returndate"]='2022-12-17';
-            
-    //         //console.log("Payload: "+payload);
-            
-    //         RoundTripSearch(payload);
-    //     } else {
-    //         payload['load2']={
-    //             "from":'BYK',
-    //             "to":'SYD',
-    //             "departdate":'2022-12-21',
-    //         }
+        var tripType=getTripType();
+        console.log(tripType);
 
-    //         for (i = 3; i <= 5; i++) {
-    //             if (document.querySelector("#from-to-depart_" + i).style.display == "block") {
-    //                 payload['load' + i] = {
-    //                     from: document.querySelector("#from-to-depart_" + i).shadowRoot.querySelector("input.from").value,
-    //                     to: document.querySelector("#from-to-depart_" + i).shadowRoot.querySelector("input.to").value,
-    //                     departdate: document.querySelector("#from-to-depart_" + i).shadowRoot.querySelector("input.depart").value,
-    //                 }
-    //             }
-    //         }
+        if (tripType == "One-Way") {
+            // sortingElement(tripType);
+            var oneWaySearchResult=await oneWaySearch(payload);
+            console.log(oneWaySearchResult);
+            flightCardCreation(oneWaySearchResult,'1',tripType);
 
-    //         //console.log("Payload: "+payload);
+        } else if (tripType == "Round-Trip") {
+            // sortingElement(tripType,payload.load0.from,payload.load0.to);
+            //payload["returndate"]=document.querySelector("input.returndate").value;
+            payload["returndate"]='2023-01-03';  
+            var roundTripSearchResult= await roundTripSearch(payload);
+            console.log(roundTripSearchResult)
+            flightCardCreation(roundTripSearchResult,'2',tripType)
 
-    //         MultiCitySearch(payload);
-    //     }
+        } else {
+            payload['load1']={
+                "from":'PEK',
+                "to":'PVG',
+                "departdate":'2023-01-05',
+            }
+            console.log(payload);
+            /*for (var i = 3; i < 5; i++) {
+                if (document.querySelector("#from-to-depart_" + i).style.display == "block") {
+                    payload['load' + i] = {
+                        from: document.querySelector("#from-to-depart_" + i).shadowRoot.querySelector("input.from").value,
+                        to: document.querySelector("#from-to-depart_" + i).shadowRoot.querySelector("input.to").value,
+                        departdate: document.querySelector("#from-to-depart_" + i).shadowRoot.querySelector("input.depart").value,
+                    }
+                }
+            }*/
 
-    //});
+            var multiCitySearchResult=await multiCitySearch(payload);
+            flightCardCreation(multiCitySearchResult,'1',tripType)
+
+        }
+    });
 });
-
-
-
-function FlightCardCreation(data,arrivalPlace,departurePlace){
-    let i=0;
-    
-    for(let value of Object.values(data)){
-        const numberofstops=value.itineraries[0].segments.length;
-        const card=document.createElement("flight-card");
-        card.setAttribute('name',"FlightCard"+i);
-        card.shadowRoot.querySelector("[name=carrier-name]").textContent=value.validatingAirlineCodes;
-        card.shadowRoot.querySelector("[name=depart-time]").appendChild(document.createTextNode(value.itineraries[0].segments[0].departure.at.split('T')[1]));
-        card.shadowRoot.querySelector('[name="depart-place"]').appendChild(document.createTextNode(departurePlace));
-        card.shadowRoot.querySelector("[name=duration]").appendChild(document.createTextNode(value.itineraries[0].duration.split('PT')[1]));                
-        card.shadowRoot.querySelector("[name=stoppage]").appendChild(document.createTextNode(numberofstops));
-        card.shadowRoot.querySelector("[name=arrival-time]").appendChild(document.createTextNode(value.itineraries[0].segments[numberofstops-1].arrival.at.split('T')[1]));
-        card.shadowRoot.querySelector("[name=arrival-place]").appendChild(document.createTextNode(arrivalPlace));
-        card.shadowRoot.querySelector("[name=price]").appendChild(document.createTextNode(value.price.total+""+value.price.currency));
-        document.body.appendChild(card);
-        //console.log()
-        //console.log("Price:"+value.price.total+""+value.price.currency);
-        //console.log("Duration:"+value.itineraries[0].duration);
-        //console.log("AirlineCodes:"+value.validatingAirlineCodes);
-        //console.log("Stoppages:"+value.itineraries[0].segments.length);
-        i++;
-    }
-}
-
 
 
 function DropDownMenuIataCode(query,value,data){

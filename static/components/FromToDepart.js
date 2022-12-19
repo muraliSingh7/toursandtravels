@@ -8,33 +8,31 @@ template.innerHTML = `
                         <input type="text" class="to" name="To">
                         <label for="depart" id="depart" class="fromtodepartlabel">Depart : </label>
                         <input type="date" class="depart" name="Depart">
+                        <button class="add" id="add">+</button>
+                        <button class="delete" id="delete">-</button>
                     </div>`;
 class FromToDepart extends HTMLElement {
     constructor() {
         super();
-        const shadow=this.attachShadow({ mode: 'open' });
+        this.attachShadow({ mode: 'open' });
         this.shadowRoot.appendChild(template.content.cloneNode(true));
-        /*shadow.addEventListener("change",(event)=>{
-            getlocations(this.shadowRoot.querySelector("input.From").value);
-            //console.log();
-        });*/
-        
-    }
-    connectedCallback(){}
-    
+        var value=this.hasAttribute("value")?this.getAttribute("value"):-2;
+        value=Number(value);
+        this.shadowRoot.querySelector('.add').addEventListener('click',()=>{
+            //console.log(`[from-to-depart=from-to-depart_${value+1}]`);
+            //console.log(document.querySelector(`[from-to-depart=from-to-depart_${value+1}]`).shadowRoot.querySelector("div").style.display);
+            if(document.querySelector(`[from-to-depart=from-to-depart_${value+1}]`).shadowRoot.querySelector("div").style.display!="block"){
+                document.querySelector(`[from-to-depart=from-to-depart_${value+1}]`).shadowRoot.querySelector("div").style.display="block";
+            }
+        });
 
-    /*show_hide(value){
-        if(value=="One-Way" || value="Round-Trip"){
-            document.querySelector('#1').style.display="block";
-            for(let i=2;i<=5;i++){
-                document.getElementById(`#${i}`).style.display="none";
-            }
-        }else{
-            for(let i=2;i<=5;i++){
-                document.getElementById(`#${i}`).style.display="block";
-            }
-        }
-    }*/
+        this.shadowRoot.querySelector('.delete').addEventListener('click',()=>{
+            document.querySelector(`[from-to-depart=from-to-depart_${value}]`).shadowRoot.querySelector("div").style.display="none";
+        });
+    }
+
+    connectedCallback(){}
+
 }
 
 window.customElements.define("from-to-depart", FromToDepart);

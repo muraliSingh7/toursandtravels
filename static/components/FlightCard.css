@@ -1,20 +1,27 @@
 .card{
+    width:600px;
     margin:20px;
     padding:10px;
-    background-color:#888;
-    outline:1px solid #444;
-    border-radius:10px;
-    box-shadow:5px 5px 5px 5px #aaa;
+    background-color:white;
+    outline:1px solid red;
+    border-radius:15px;
+    box-shadow:2px 2px 15px 1px red;
 }
 .flex-row{
     display:flex;
     flex-direction: row;
+    justify-content: space-around;
+
 }
 .flex-row>div{
-    margin:0 auto;
+    margin:0 40px;
+    text-align:left;
 }
 .time{
     font-weight: bold;
+}
+table{
+    width: 100%;
 }
 .place{
 

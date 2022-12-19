@@ -21,3 +21,15 @@ div{
     display: inline-block;
     margin:5px 20px 5px 5px;
 }
+.add{
+    display:inline-block;
+    background-color: white;
+    border-radius:50%;
+    border-color: blue;
+}
+.delete{
+    display:inline-block;
+    background-color: white;
+    border-radius:50%;
+    border-color: blue;
+}

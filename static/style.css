@@ -50,29 +50,15 @@
     font-size: 20px;
     font-family: Georgia, serif;
 }
-.add{
-    display:none;
-    color:blue;
-    background-color: white;
-    border-radius:50%;
-    border-color: blue;
-}
-.delete{
-    display:none;
-    color:blue;
-    background-color: white;
-    border-radius:50%;
-    border-color: blue;
-}
+
 .returndate{
     display:none;
-    color:blue;
-    font-size: 20px;
-    font-family: Georgia, serif;
 }
+
 .returninput{
     display:none;
 }
+
 .adult{
     display:none;
     color:blue;
@@ -81,7 +67,7 @@
 }
 .adultinput{
     display:none;
-    margin-right: 155px;
+    margin-right: 140px;
     
 }
 .child{

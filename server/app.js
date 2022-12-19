@@ -1,4 +1,3 @@
-const process = require('process');
 const Amadeus = require('amadeus');
 const express = require("express");
 const app = express()
@@ -87,7 +86,7 @@ app.get('/flights/round-trip/:from/:to/:departdate/:returndate/:adult/:children'
 });
 
 var URL='/:adult/:children';
-for(i=1;i<=5;i++){
+for(i=0;i<5;i++){
   URL+='/:from'+i+'?/'+':to'+i+'?/'+':departdate'+i+'?';
 }
 
@@ -98,7 +97,7 @@ app.get('/flights/multi-city'+URL, async (req, res) => {
   var response = {};
   var flag=0;
   var error={}
-  for (i = 1; i <= 5; i++) {
+  for (i = 0; i < 5; i++) {
     if (req.params['from'+i]!==undefined && req.params['to'+i]!==undefined && req.params['departdate'+i]!==undefined) {
       try {
         response['response' + i] = await getflightoffers(req.params['from'+i], req.params['to'+i], req.params['departdate'+i],null, req.params.adult,

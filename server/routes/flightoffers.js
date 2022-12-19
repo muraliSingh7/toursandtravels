@@ -1,38 +1,32 @@
-import express from './index.js';
-import baseURL from './amadeus/amadeusapi';
-import config from './config';
-import getflightoffers from './routes/getflightoffers';
-
-const router=express.Router();
-
-
-function pathbuilder(arr){
-    let URL='';
-    arr.forEach((key)=>{
-        URL += '/' + key + '/:' + key;
-    })
-    
-    return URL;
+export async function oneWaySearch(payload) {
+    var response=await fetch(`http://127.0.0.1:3000/flights/one-way/${payload.load0.from}/${payload.load0.to}/${payload.load0.departdate}/${payload.adult}/${payload.child}`)
+    var data=await response.json();
+    return {'response0':{'data' :data}};
 }
 
-/*Object demo={'origin':,
-'destination':,
-''}*/
-callparameters=['origin','destination'];
-var path=pathbuilder(callparameters);
-console.log(path);
 
-router.get(config.backendconfig.apiURL+'/flights/one-way/:from/:to/:departdate/:adult/:children'+path,(req,res)=>{
+
+export async function roundTripSearch(payload) {
+    var response=await fetch(`http://127.0.0.1:3000/flights/round-trip/${payload.load0.from}/${payload.load0.to}/${payload.load0.departdate}/${payload.returndate}/${payload.adult}/${payload.child}`)
+    var data=await response.json();
+    return {'response0':{'data' :data}};
+}
+
+
+
+export async function multiCitySearch(payload) {
+    var URL=payload.adult+'/'+payload.child;
+    for(let i=0;i<5;i++){
+        if(payload.hasOwnProperty('load'+i) && payload['load'+i].from!==undefined && payload['load'+i].to!==undefined && payload['load'+i].departdate!==undefined ){
+            URL+='/'+payload['load'+i].from+'/'+payload['load'+i]['to']+'/'+payload['load'+i]['departdate'];
+        }
+    }
+
+    //console.log(URL);
     
-    console.log(req.params);
-    /*var data=getflightoffers(req.params.origin,
-    req.params.destination,
-    req.params.departdate,req.params.returndate,
-    req.params.offers['adults'],req.params.offers['children'],
-    req.params.offers['travelClass']
-    )*/
+    var response=await fetch(`http://127.0.0.1:3000/flights/multi-city/`+URL)
+    var data=await response.json();
+    return data;
+}
 
-    //console.log(data);    
-    //res.send(data);
-
-})
+//export {oneWaySearch,roundTripSearch,multiCitySearch};

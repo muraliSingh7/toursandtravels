@@ -8,6 +8,8 @@
     <title>Document</title>
     <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet"  
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
@@ -50,17 +52,11 @@
                 <option value="Multi-City">Multi City</option>
             </select-->
 
-            <from-to-depart from-to-depart="from-to-depart_1"></from-to-depart>
-            <from-to-depart from-to-depart="from-to-depart_2"></from-to-depart>
-            <button class="add" type="button" id="add2">+</button>
-            <from-to-depart from-to-depart="from-to-depart_3"></from-to-depart>
-            <button class="add" id="add3">+</button>
-            <button class="delete" id="delete3">-</button>
-            <from-to-depart from-to-depart="from-to-depart_4"></from-to-depart>
-            <button class="add" id="add4" >+</button>
-            <button class="delete" id="delete4">-</button>
-            <from-to-depart from-to-depart="from-to-depart_5"></from-to-depart>
-            <button class="delete" id="delete5">-</button>
+            <from-to-depart value="1" from-to-depart="from-to-depart_1"></from-to-depart>
+            <from-to-depart value="2" from-to-depart="from-to-depart_2"></from-to-depart>
+            <from-to-depart value="3" from-to-depart="from-to-depart_3"></from-to-depart>
+            <from-to-depart value="4" from-to-depart="from-to-depart_4"></from-to-depart>
+            <from-to-depart value="5" from-to-depart="from-to-depart_5"></from-to-depart>
             
             <label class="returndate" for="ReturnDate" id="ReturnDate">Return : </label>
             <input class="returninput" type="date" name="ReturnDate">
@@ -74,10 +70,10 @@
             <button class="search" type="submit">Search</button>
         </form>
     </div>
-    
+  
     <script src="static/components/FromToDepart.js"></script>
     <script src="static/components/FlightCard.js"></script>
-    <script src="static/index.js" type="text/javascript"></script>
+    <script src="static/index.js" type="module"></script>
     <script src="static/operation.js" type="text/javascript"></script>
     <!--script src="static/config.js" type="text/javascript"></script>
     <script src="static/operation.js" type="text/javascript"></script>
