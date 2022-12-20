@@ -1,6 +1,6 @@
 import { sortByPrice, sortByTime, sortByDuration } from '../commonfunctions/sorting.js';
+import{shallowCopy} from '../commonfunctions/deepcopy.js';
 
-var data;
 export function flightCardCreation(result, tripcount, triptype) {    
     let container = document.createElement('div');
     container.setAttribute('name', 'trip');
@@ -26,10 +26,9 @@ export function flightCardCreation(result, tripcount, triptype) {
     // sortByDuration(originalData, "ascending", j);
     // sortByDuration(originalData, "descending", j);
     for (let k = 0; k < tripvalue; k++) {
-        var originalData = result['response' + k].data;
-        data = originalData;
-        sortingElement("One-Way","","",originalData);
-        
+        let originalData = result['response' + k].data;
+        let data = shallowCopy(originalData).slice(0,50);
+        sortingElement("One-Way","","",originalData,data);
         
         let i = 0;
         for (let value of Object.values(data)) {
@@ -60,13 +59,7 @@ export function flightCardCreation(result, tripcount, triptype) {
 }
 
 
-
-
-
-
-
-
-function sortingElement(triptype, from, to, originalData) {
+function sortingElement(triptype, from, to, originalData,data) {
 
     let buttonContainer = document.createElement('div');
     buttonContainer.setAttribute('name', 'sorting');
@@ -80,7 +73,7 @@ function sortingElement(triptype, from, to, originalData) {
         console.log("One-Way");
         var parameters = ['Departure', 'Duration', 'Arrival', 'Price']
         for (let j of parameters) {
-            buttonContainer.appendChild(createSortingElement(j, "font-size:20px;margin:auto;width:200px;text-align:center", parameters, originalData));
+            buttonContainer.appendChild(createSortingElement(j, "font-size:20px;margin:auto;width:200px;text-align:center", parameters, originalData,data));
         }
 
 
@@ -95,14 +88,10 @@ function sortingElement(triptype, from, to, originalData) {
         buttonContainer.appendChild(buttonContainerColumn1);
         buttonContainer.appendChild(createSortingElement(parameters[parameters.length - 1], "flex-grow-1;align-self:center;color:black;font-size:20px;", parameters));
     }
-    document.body.appendChild(buttonContainer);
-
-
-
-
+    return document.body.appendChild(buttonContainer);
 }
 
-function createSortingElement(nameOfElement, cssOfElement, parameters, originalData) {
+function createSortingElement(nameOfElement, cssOfElement, parameters, originalData,data) {
     var uparrow = document.createElement('i');
     uparrow.setAttribute('class', 'fa fa-arrow-up');
     var downarrow = document.createElement('i');
@@ -112,7 +101,8 @@ function createSortingElement(nameOfElement, cssOfElement, parameters, originalD
     paramElement.setAttribute('name', nameOfElement);
     paramElement.textContent = nameOfElement.replaceAll('_', ' ');
     paramElement.style.cssText = cssOfElement;
-    paramElement.addEventListener('click', () => {
+    paramElement.addEventListener('click', ()=>{
+        
         var arrowState;
         if (paramElement.contains(uparrow)) {
             arrowState = "up";
@@ -174,15 +164,14 @@ function removalOfUpDownArrow(parameters) {
 
 
 function OneWaySorting(originalData, sortBy, type, order) {
-    let result;
+    
     if (sortBy == "Time") {
-        result=sortByTime(originalData,type,order,0);
+        return sortByTime(originalData,type,order,0);
     } else if (sortBy = "Price") {
-        result=sortByPrice(originalData,order,0);
+        return sortByPrice(originalData,order,0);
     } else {
-        result=sortByDuration(originalData,order,0);
+        return sortByDuration(originalData,order,0);
     }
-    return result;
 }
 
 function RoundTripSorting() {

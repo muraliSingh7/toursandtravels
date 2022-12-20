@@ -23,9 +23,9 @@ export function sortByPrice(data,order,itinerariesValue) {
     if (result_By_Price.length > 50) {
         result_By_Price = result_By_Price.slice(0, 50);
     }
-    result_By_Price.forEach((element) => {
-        console.log(element.price.total+" "+element.itineraries[itinerariesValue].duration);
-    });
+    // result_By_Price.forEach((element) => {
+    //     console.log(element.price.total+" "+element.itineraries[itinerariesValue].duration);
+    // });
     console.log("price");
     return result_By_Price;
 }
@@ -84,13 +84,13 @@ export function sortByTime(data, time, order,itinerariesValue) {
         result_By_Time = result_By_Time.slice(0, 50);
     }
 
-    result_By_Time.forEach(element => {
-        if (time == "departure") {
-            console.log(element.price.total+" "+element.itineraries[itinerariesValue].segments[0].departure.at);
-        }else{
-            console.log(element.price.total+" "+element.itineraries[itinerariesValue].segments[element.itineraries[itinerariesValue].segments.length-1].arrival.at);
-        }
-    });
+    // result_By_Time.forEach(element => {
+    //     if (time == "departure") {
+    //         console.log(element.price.total+" "+element.itineraries[itinerariesValue].segments[0].departure.at);
+    //     }else{
+    //         console.log(element.price.total+" "+element.itineraries[itinerariesValue].segments[element.itineraries[itinerariesValue].segments.length-1].arrival.at);
+    //     }
+    // });
 
     console.log("Time");
     return result_By_Time;
@@ -113,12 +113,12 @@ export function sortByDuration(data,order,itinerariesValue) {
             return priceCompare(Number(a.price.total), Number(b.price.total),order);
         }
     });
-    if (result_By_Duration.length > 50) {
-        result_By_Duration = result_By_Duration.slice(0, 50);
-    }
-    result_By_Duration.forEach(element => {
-        console.log(element.price.total+" "+element.itineraries[itinerariesValue].duration);
-    });
+    // if (result_By_Duration.length > 50) {
+    //     result_By_Duration = result_By_Duration.slice(0, 50);
+    // }
+    // result_By_Duration.forEach(element => {
+    //     console.log(element.price.total+" "+element.itineraries[itinerariesValue].duration);
+    // });
     console.log("Duration");
     return result_By_Duration;
 }

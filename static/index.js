@@ -2,7 +2,7 @@ import {getTripType} from './commonfunctions/triptype.js';
 import {oneWaySearch,roundTripSearch,multiCitySearch} from '../server/routes/flightoffers.js'
 import {flightCardCreation} from './views/tripsearchresult.js';
 //import { sortingElement } from './views/tripsearchresult.js';
-
+//import {OneWayResult} from './views/OneWayResult.js'
 
 async function AirportSearch(query){
     console.log(query);
@@ -64,8 +64,8 @@ addEventListener('DOMContentLoaded', (event) => {
             "adult": document.querySelector("input.adult").value,
             "child": document.querySelector("input.children").value,*/
             "load0":{
-                "from":'LAX',
-                "to":'ORD',
+                "from":'JFK',
+                "to":'IAD',
                 "departdate":'2023-01-01'
             },
             "adult":1,
@@ -80,15 +80,17 @@ addEventListener('DOMContentLoaded', (event) => {
             // sortingElement(tripType);
             var oneWaySearchResult=await oneWaySearch(payload);
             console.log(oneWaySearchResult);
+            // let oneWay=new OneWayResult(oneWaySearchResult);
+            // oneWay.main();
             flightCardCreation(oneWaySearchResult,'1',tripType);
 
         } else if (tripType == "Round-Trip") {
             // sortingElement(tripType,payload.load0.from,payload.load0.to);
             //payload["returndate"]=document.querySelector("input.returndate").value;
-            payload["returndate"]='2023-01-03';  
-            var roundTripSearchResult= await roundTripSearch(payload);
-            console.log(roundTripSearchResult)
-            flightCardCreation(roundTripSearchResult,'2',tripType)
+            // payload["returndate"]='2023-01-03';  
+            // var roundTripSearchResult= await roundTripSearch(payload);
+            // console.log(roundTripSearchResult)
+            // flightCardCreation(roundTripSearchResult,'2',tripType)
 
         } else {
             payload['load1']={
@@ -108,7 +110,7 @@ addEventListener('DOMContentLoaded', (event) => {
             }*/
 
             var multiCitySearchResult=await multiCitySearch(payload);
-            flightCardCreation(multiCitySearchResult,'1',tripType)
+            //flightCardCreation(multiCitySearchResult,'1',tripType)
 
         }
     });
