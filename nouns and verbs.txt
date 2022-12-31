@@ -1,0 +1,35 @@
+nouns
+Trip
+
+Flight
+search form
+search result panel
+search result
+user
+passenger
+price
+airport
+location 
+city
+offer
+date and time
+direct flight
+leg
+
+
+
+
+
+Hotel
+
+
+
+
+
+
+
+verb
+search 
+book a flight
+notify book details
+notifying of upcoming trip

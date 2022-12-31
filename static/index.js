@@ -1,8 +1,10 @@
 import {getTripType} from './commonfunctions/triptype.js';
 import {oneWaySearch,roundTripSearch,multiCitySearch} from '../server/routes/flightoffers.js'
-import {flightCardCreation} from './views/tripsearchresult.js';
+//import {flightCardCreation} from './views/tripsearchresult.js';
 //import { sortingElement } from './views/tripsearchresult.js';
-//import {OneWayResult} from './views/OneWayResult.js'
+import {OneWayResult} from './views/OneWayResult.js'
+import {RoundWayResult} from './views/RoundWayResult.js'
+import {MultiTripResult} from './views/MultiTripResult.js'
 
 async function AirportSearch(query){
     console.log(query);
@@ -80,16 +82,19 @@ addEventListener('DOMContentLoaded', (event) => {
             // sortingElement(tripType);
             var oneWaySearchResult=await oneWaySearch(payload);
             console.log(oneWaySearchResult);
-            // let oneWay=new OneWayResult(oneWaySearchResult);
-            // oneWay.main();
-            flightCardCreation(oneWaySearchResult,'1',tripType);
+            let oneWay=new OneWayResult(oneWaySearchResult,payload.load0.from,payload.load0.to);
+            oneWay.main();
+            //flightCardCreation(oneWaySearchResult,'1',tripType);
 
         } else if (tripType == "Round-Trip") {
             // sortingElement(tripType,payload.load0.from,payload.load0.to);
             //payload["returndate"]=document.querySelector("input.returndate").value;
-            // payload["returndate"]='2023-01-03';  
-            // var roundTripSearchResult= await roundTripSearch(payload);
-            // console.log(roundTripSearchResult)
+            payload["returndate"]='2023-01-03';  
+            var roundTripSearchResult= await roundTripSearch(payload);
+            console.log(roundTripSearchResult);
+            let roundTrip=new RoundWayResult(roundTripSearchResult,payload.load0.from,payload.load0.to);
+            roundTrip.main();
+            
             // flightCardCreation(roundTripSearchResult,'2',tripType)
 
         } else {
@@ -110,6 +115,10 @@ addEventListener('DOMContentLoaded', (event) => {
             }*/
 
             var multiCitySearchResult=await multiCitySearch(payload);
+            console.log(multiCitySearchResult);
+            console.log(Object.keys(payload).length);
+            let mutiCity=new MultiTripResult(2,multiCitySearchResult);
+            mutiCity.main();
             //flightCardCreation(multiCitySearchResult,'1',tripType)
 
         }

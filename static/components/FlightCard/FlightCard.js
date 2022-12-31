@@ -17,7 +17,7 @@ oneTripDetailTemplate.innerHTML = `<div class="flex-row">
     ;
 
 FlightCardTemplate.innerHTML =
-    `<link rel="stylesheet" href="static/components/FlightCard.css">
+    `<link rel="stylesheet" href="static/components/FlightCard/FlightCard.css">
         <div class="card">
             <header class="carrier-name" name="carrier-name"></header>
             <table>
@@ -40,9 +40,9 @@ FlightCardTemplate.innerHTML =
 
 
 class FlightCard extends HTMLElement {
-    constructor(tripcount,tripType) {
+    constructor(tripcount) {
         super();
-        this.tripcount = Number(tripcount);
+        this.tripcount = tripcount;
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.appendChild(FlightCardTemplate.content.cloneNode(true));
         //console.log(this.shadowRoot);

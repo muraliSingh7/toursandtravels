@@ -1,6 +1,6 @@
 const template = document.createElement("template");
 template.innerHTML = `
-                    <link rel="stylesheet" href="static/components/FromtoDepart.css">
+                    <link rel="stylesheet" href="static/components/FromtoDepart/FromtoDepart.css">
                     <div>
                         <label for="from" id="from" class="fromtodepartlabel">From : </label>
                         <input type="text" class="from" name="From">
