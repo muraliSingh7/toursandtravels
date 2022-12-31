@@ -8,8 +8,8 @@
     <title>Document</title>
     <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet"  
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="static/views/OneWayResult/OneWayResult.css">
 </head>
 
 <body>
@@ -40,9 +40,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome
         <form id="flight-search">
             <input class="triptype" type="radio" name="Trip-Type" value="One-Way">
             <label class="triptypelabels" for="One-Way">One Way</label>
-            <input class="triptype" type="radio" name="Trip-Type"  value="Round-Trip">
+            <input class="triptype" type="radio" name="Trip-Type" value="Round-Trip">
             <label class="triptypelabels" for="Round-Trip">Round Trip</label>
-            <input class="triptype"type="radio" name="Trip-Type" value="Multi-City">
+            <input class="triptype" type="radio" name="Trip-Type" value="Multi-City">
             <label class="triptypelabels" for="Multi-City">Multi City</label><br>
 
             <!--label for="Trip-Type">Trip Type:</label>
@@ -57,7 +57,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome
             <from-to-depart value="3" from-to-depart="from-to-depart_3"></from-to-depart>
             <from-to-depart value="4" from-to-depart="from-to-depart_4"></from-to-depart>
             <from-to-depart value="5" from-to-depart="from-to-depart_5"></from-to-depart>
-            
+
             <label class="returndate" for="ReturnDate" id="ReturnDate">Return : </label>
             <input class="returninput" type="date" name="ReturnDate">
 
@@ -70,17 +70,16 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome
             <button class="search" type="submit">Search</button>
         </form>
     </div>
-  
+
     <script src="static/components/FromToDepart/FromToDepart.js"></script>
     <script src="static/components/FlightCard/FlightCard.js"></script>
-    <script src="static/components/OneWayFilter/OneWayFilter.js"></script>
     <script src="static/index.js" type="module"></script>
     <script src="static/operation.js" type="text/javascript"></script>
     <!--script src="static/config.js" type="text/javascript"></script>
     <script src="static/operation.js" type="text/javascript"></script>
     <script src="static/amadeus/api.js" type="text/javascript"></script!-->
-    
-    
+
+
 </body>
 
 </html>

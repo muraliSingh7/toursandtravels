@@ -2,7 +2,7 @@ import {getTripType} from './commonfunctions/triptype.js';
 import {oneWaySearch,roundTripSearch,multiCitySearch} from '../server/routes/flightoffers.js'
 //import {flightCardCreation} from './views/tripsearchresult.js';
 //import { sortingElement } from './views/tripsearchresult.js';
-import {OneWayResult} from './views/OneWayResult.js'
+import {OneWayResult} from './views/OneWayResult/OneWayResult.js'
 import {RoundWayResult} from './views/RoundWayResult.js'
 import {MultiTripResult} from './views/MultiTripResult.js'
 
@@ -66,9 +66,9 @@ addEventListener('DOMContentLoaded', (event) => {
             "adult": document.querySelector("input.adult").value,
             "child": document.querySelector("input.children").value,*/
             "load0":{
-                "from":'JFK',
-                "to":'IAD',
-                "departdate":'2023-01-01'
+                "from":'BOM',
+                "to":'BLR',
+                "departdate":'2023-01-05'
             },
             "adult":1,
             "child":1

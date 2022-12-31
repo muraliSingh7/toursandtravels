@@ -196,20 +196,22 @@ function timeCompare(hour_Of_A, hour_Of_B, minutes_Of_A, minutes_Of_B, order) {
         let departureTime=value.itineraries[0].segments[0].departure.at.split('T')[1].match(/\d+/g);
         if (Airline[airlineCode]) {
             Airline[airlineCode]['count'] = Airline[airlineCode]['count'] + 1;
-            Airline[airlineCode]['result'].push(result[i]);
+            Airline[airlineCode]['result'].push(value);
             Airline[airlineCode]['minimumPrice'] = Math.min(Number(Airline[airlineCode]['minimumPrice']), Number(price));
         } else {
             Airline[airlineCode]={};
-            Airline[airlineCode] = { 'count': 1, 'result': [result[i]], 'minimumPrice': price };
+            Airline[airlineCode] = { 'count': 1, 'result': [value], 'minimumPrice': price };
         }
 
         if(numberOfStopsFromSource[numberOfStops]){
-            numberOfStopsFromSource[numberOfStops]++;
+            numberOfStopsFromSource[numberOfStops]['count']=Number(numberOfStopsFromSource[numberOfStops]['count'])+1;
+            numberOfStopsFromSource[numberOfStops]['minimumPrice']=Math.min(Number(numberOfStopsFromSource[numberOfStops]['minimumPrice']),price);
+            numberOfStopsFromSource[numberOfStops]['result'].push(value);
         }else{
-            numberOfStopsFromSource={numberOfStops:1};
+            numberOfStopsFromSource[numberOfStops]={'count':1,'minimumPrice': price,'result':[value]};
         }
-        DepartureFromSourceAsPerTime =timeFilter(result[i],departureTime,price,DepartureFromSourceAsPerTime);
-        ArrivalAtDestinationAsPerTime =timeFilter(result[i],arrivalTime,price,ArrivalAtDestinationAsPerTime);
+        DepartureFromSourceAsPerTime =timeFilter(value,departureTime,price,DepartureFromSourceAsPerTime);
+        ArrivalAtDestinationAsPerTime =timeFilter(value,arrivalTime,price,ArrivalAtDestinationAsPerTime);
     }
 
     return {'numberOfStopsFromSource':numberOfStopsFromSource,'DepartureFromSourceAsPerTime':DepartureFromSourceAsPerTime,'ArrivalAtDestinationAsPerTime':ArrivalAtDestinationAsPerTime,'Airline':Airline}

@@ -1,4 +1,4 @@
-import { sortByPrice, sortByTime, sortByDuration, appliedFilter } from '../commonfunctions/sorting.js';
+import { sortByPrice, sortByTime, sortByDuration, appliedFilter } from '../../commonfunctions/sorting.js';
 export class OneWayResult {
     #originalResult;
     #displayData;
@@ -13,35 +13,42 @@ export class OneWayResult {
     flightResultColumnCreation() {
         let container = document.createElement('div');
         container.setAttribute('name', 'trip');
-        container.setAttribute('class', 'container');
-        container.style.cssText += "display:flex;flex-direction:row;flex-wrap:no-wrap;justify-content:flex-start;align-items:flex-start;row-gap:5px";
+        container.setAttribute('class', 'resultViewContainer');
         document.body.appendChild(container);
 
 
         let filterPanel = document.createElement('div');
         filterPanel.setAttribute('name', 'filterPanel');
-        // column.style.cssText += "display:flex;flex-direction:column;flex-wrap:no-wrap;justify-content:flex-start;align-items:flex-start;margin:10px 10px";
+        filterPanel.setAttribute('class','filterPanel');
+        // column.style.cssText += "";
         document.querySelector('[name=trip]').appendChild(filterPanel);
 
         let sortPanel = document.createElement('div');
         sortPanel.setAttribute('name', 'sortPanel');
-        // column.style.cssText += "display:flex;flex-direction:column;flex-wrap:no-wrap;justify-content:flex-start;align-items:flex-start;margin:10px 10px";
+        filterPanel.setAttribute('class','sortPanel');
+        // column.style.cssText += "";
         document.querySelector('[name=trip]').appendChild(sortPanel);
 
     }
 
 
-    creatingButtonsAsPerTimeRange(parentElement, resultAsPerTimeRange, departureOrArrival) {
+    creatingButtonsAsPerTimeRangeFilter(parentElement, resultAsPerTimeRange, departureOrArrival) {
         var timing = ['0AM-6AM', '6AM-12PM', '12PM-6PM', '6PM-12AM'];
+        var timeHeader=['Before 6AM', '6AM-12PM', '12PM-6PM', 'After 6PM']
         var imgSource = ["https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/morning_active.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/noon_inactive.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/evening_inactive.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/night_inactive.png?v=1"
         ];
+
+
+        
         for (let i = 0; i < timing.length; i++) {
             if (resultAsPerTimeRange[timing[i]]) {
                 let buttonContainer = document.createElement('div');
-                buttonContainer.setAttribute('class', timeIntervalButton);
+                buttonContainer.setAttribute('class', 'timeIntervalButton');
+
+
                 if (departureOrArrival == 'departure') {
                     buttonContainer.setAttribute('departure-time', timing[i]);
                 } else {
@@ -51,11 +58,13 @@ export class OneWayResult {
 
                 let img = document.createElement('img');
                 img.setAttribute('src', imgSource[i]);
+                img.setAttribute('class','buttonimg');
                 buttonContainer.appendChild(img);
 
 
                 let timeTitle = document.createElement('p');
                 timeTitle.setAttribute('class', 'timeTitle');
+                timeTitle.textContent=timeHeader[i];
                 buttonContainer.appendChild(timeTitle);
 
 
@@ -68,12 +77,12 @@ export class OneWayResult {
                 buttonContainer.addEventListener('click', () => {
                     if (buttonContainer.style.backgroundColor == "none") {
                         buttonContainer.style.backgroundColor = "green";
-                        this.appliedFilterCommonData(timing[i], DepartureFromSourceAsPerTime[timing[i]]['result'], true);
+                        this.appliedFilterCommonData(timing[i], resultAsPerTimeRange[timing[i]]['result'], true);
                     }
 
                     if (buttonContainer.style.backgroundColor == "green") {
                         buttonContainer.style.backgroundColor = "none";
-                        this.appliedFilterCommonData(timing[i], DepartureFromSourceAsPerTime[timing[i]]['result'], false);
+                        this.appliedFilterCommonData(timing[i], resultAsPerTimeRange[timing[i]]['result'], false);
                     }
                 });
 
@@ -84,12 +93,89 @@ export class OneWayResult {
         }
     }
 
+    numberOfStopsFilter(parentElement, filterResult) {
+        Object.keys(filterResult).forEach(stopNumber => {
+            let numberOfStops = document.createElement('div');
+            numberOfStops.setAttribute('class', 'subContainer');
+
+
+            let numberOfStopsNameInput = document.createElement('input');
+            numberOfStopsNameInput.setAttribute('type', 'checkbox');
+            numberOfStopsNameInput.setAttribute('name', stopNumber + '-Stop');
+
+
+            let numberOfStopsLabel = document.createElement('label');
+            numberOfStopsLabel.setAttribute('for', stopNumber + ' Stop');
+            numberOfStopsLabel.setAttribute('class','titlelabel');
+            numberOfStopsLabel.textContent = stopNumber + ' Stop ' + "(" + filterResult[stopNumber]['count'] + ")";
+
+
+            let numberOfStopsPrice = document.createElement('p');
+            numberOfStopsPrice.setAttribute('name', 'numberOfStopsPrice');
+            numberOfStopsPrice.setAttribute('class','price');
+            numberOfStopsPrice.textContent = filterResult[stopNumber]['minimumPrice'];
+
+
+            numberOfStops.appendChild(numberOfStopsNameInput);
+            numberOfStops.appendChild(numberOfStopsLabel);
+            numberOfStops.appendChild(numberOfStopsPrice);
+
+
+            numberOfStops.addEventListener('click', () => {
+                if (numberOfStopsNameInput.checked) {
+                    this.appliedFilterCommonData(stopNumber, filterResult[stopNumber]['result'], true);
+                } else {
+                    this.appliedFilterCommonData(stopNumber, filterResult[stopNumber]['result'], false);
+                }
+            });
+
+
+            parentElement.appendChild(numberOfStops);
+        });
+    }
+
+    airlineFilter(parentELement, filterResult) {
+        Object.keys(filterResult).forEach(airlineCode => {
+            let airline = document.createElement('div');
+            airline.setAttribute('class','subContainer');
+
+            let airlineNameInput = document.createElement('input');
+            airlineNameInput.setAttribute('type', 'checkbox');
+            airlineNameInput.setAttribute('name', airlineCode);
+
+
+            let airlineLabel = document.createElement('label');
+            airlineLabel.setAttribute('for', airlineCode);
+            airlineLabel.setAttribute('class','titlelabel');
+            airlineLabel.textContent = airlineCode + "(" + filterResult[airlineCode]['count'] + ")";
+
+
+            let airlinePrice = document.createElement('p');
+            airlinePrice.setAttribute('class', 'airlinePrice');
+            airlinePrice.setAttribute('class','price');
+            airlinePrice.textContent = filterResult[airlineCode]['minimumPrice'];
+
+
+            airline.appendChild(airlineNameInput);
+            airline.appendChild(airlineLabel);
+            airline.appendChild(airlinePrice);
+
+
+            airline.addEventListener('click', () => {
+                if (airlineNameInput.checked) {
+                    this.appliedFilterCommonData(airlineCode, airline['result'], true);
+                } else {
+                    this.appliedFilterCommonData(airlineCode, airline['result'], false);
+                }
+            });
+
+
+            parentELement.appendChild(airline);
+        });
+
+    }
 
     filterViewCreation(source, destination, result) {
-        var filterElementsContainer=['stoppage','departure','arrival','airlines'];
-        var filterElementsTitle=[`Stops From ${source}`,`Departure From ${source}`,`Arrival To ${destination}`, 'Airlines'];
-
-
         let appliedFilterResult = appliedFilter(result);
         console.log(appliedFilterResult);
         let numberOfStopsFromSource = appliedFilterResult['numberOfStopsFromSource'];
@@ -98,115 +184,73 @@ export class OneWayResult {
         let Airline = appliedFilterResult['Airline'];
 
 
-        if(Object.keys(numberOfStopsFromSource).length>0){
-            let numberOfStopsContainer=document.createElement('div');
-            numberOfStopsContainer.setAttribute('class','container');
-            numberOfStopsContainer.setAttribute('name','numberOfStops');
-
-            let numberOfStopsTitle=document.createElement('p');
-            numberOfStopsTitle.setAttribute('class','title');
-            numberOfStopsTitle.setAttribute('name','numberOfStopsTitle');
-            numberOfStopsTitle.textContent=`Stops From ${source}`;
+        if (Object.keys(numberOfStopsFromSource).length > 0) {
+            let numberOfStopsContainer = document.createElement('div');
+            numberOfStopsContainer.setAttribute('class', 'container');
+            numberOfStopsContainer.setAttribute('name', 'numberOfStops');
 
 
+            let numberOfStopsTitle = document.createElement('p');
+            numberOfStopsTitle.setAttribute('class', 'title');
+            numberOfStopsTitle.setAttribute('name', 'numberOfStopsTitle');
+            numberOfStopsTitle.textContent = `Stops From ${source}`;
 
 
-        }
-
-        if(Object.keys(DepartureFromSourceAsPerTime).length>0){
-            let DepartureFromSourceAsPerTimeContainer=document.createElement('div');
-            DepartureFromSourceAsPerTimeContainer.setAttribute('class','container');
-            DepartureFromSourceAsPerTimeContainer.setAttribute('name','DepartureFromSourceAsPerTime');
-
-            let DepartureFromSourceAsPerTimeTitle=document.createElement('p');
-            DepartureFromSourceAsPerTimeTitle.setAttribute('class','title');
-            DepartureFromSourceAsPerTimeTitle.setAttribute('name','DepartureFromSourceAsPerTimeTitle');
-            DepartureFromSourceAsPerTimeTitle.textContent=`Departure From ${source}`;
-            this.creatingButtonsAsPerTimeRange(DepartureFromSourceAsPerTimeContainer,DepartureFromSourceAsPerTime,departure);
-        }
-
-        if(Object.keys(ArrivalAtDestinationAsPerTime).length>0){
-            let ArrivalAtDestinationAsPerTimeContainer=document.createElement('div');
-            ArrivalAtDestinationAsPerTimeContainer.setAttribute('class','container');
-            ArrivalAtDestinationAsPerTimeContainer.setAttribute('name','ArrivalAtDestinationAsPerTime');
-
-            let ArrivalAtDestinationAsPerTimeTitle=document.createElement('p');
-            ArrivalAtDestinationAsPerTimeTitle.setAttribute('class','title');
-            ArrivalAtDestinationAsPerTimeTitle.setAttribute('name','ArrivalAtDestinationAsPerTimeTitle');
-            ArrivalAtDestinationAsPerTimeTitle.textContent=`Arrival To ${destination}`;
-
-            this.creatingButtonsAsPerTimeRange(ArrivalAtDestinationAsPerTimeContainer,ArrivalAtDestinationAsPerTime,arrival);
-        }
-
-        if(Object.keys(Airline).length>0){
-            let AirlineContainer=document.createElement('div');
-            AirlineContainer.setAttribute('class','container');
-            AirlineContainer.setAttribute('name','Airline');
-
-            let AirlineTitle=document.createElement('p');
-            AirlineTitle.setAttribute('class','title');
-            AirlineTitle.setAttribute('name','AirlineTitle');
-            AirlineTitle.textContent="Airlines";
-
-        }
-        var timing = ['0AM-6AM', '6AM-12PM', '12PM-6PM', '6PM-12AM'];
-
-
-        for (let i = 0; i < Airline.length; i++) {
-            let airline = document.createElement('div');
-            let airlineNameInput = document.createElement('input');
-            airlineNameInput.setAttribute('type', 'checkbox');
-            airlineNameInput.setAttribute('name', Airline.name);
-
-            let airlineLabel = document.createElement('label');
-            airlineLabel.setAttribute('for', Airline.name);
-            airlineLabel.textContent = Airline.name + "(" + Airline.count + ")";
-
-            let airlinePrice = document.createElement('p');
-            airlinePrice.setAttribute('class', 'airlinePrice');
-            airlinePrice.textContent = Airline.minimumPrice;
-
-            airline.appendChild(airlineNameInput);
-            airline.appendChild(airlineLabel);
-            airline.appendChild(airlinePrice);
-            airline.addEventListener('click', () => {
-                if (document.querySelector[`input[name=${Airline.name}]`].checked) {
-                    this.appliedFilterCommonData(Airline.name, Airline.result, true);
-                } else {
-                    this.appliedFilterCommonData(Airline.name, Airline.result, false);
-                }
-            });
-            document.querySelector('[name=oneWayFilter]').shadowRoot.querySelector('[name=airlines]').appendChild(airline);
+            numberOfStopsContainer.appendChild(numberOfStopsTitle);
+            this.numberOfStopsFilter(numberOfStopsContainer,numberOfStopsFromSource);
+            document.querySelector('[name=filterPanel]').appendChild(numberOfStopsContainer);
 
         }
 
-        for (let i = 0; i < numberOfStopsFromSource.length; i++) {
-            let numberOfStops = document.createElement('div');
-            let numberOfStopsNameInput = document.createElement('input');
-            numberOfStopsNameInput.setAttribute('type', 'checkbox');
-            numberOfStopsNameInput.setAttribute('name', numberOfStopsFromSource.name);
-
-            let numberOfStopsLabel = document.createElement('label');
-            numberOfStopsLabel.setAttribute('for', numberOfStopsFromSource.name);
-            numberOfStopsLabel.textContent = numberOfStopsFromSource.name + "(" + numberOfStopsFromSource.count + ")";
-
-            let numberOfStopsPrice = document.createElement('p');
-            numberOfStopsPrice.setAttribute('class', 'numberOfStopsPrice');
-            numberOfStopsPrice.textContent = numberOfStopsFromSource.minimumPrice;
+        if (Object.keys(DepartureFromSourceAsPerTime).length > 0) {
+            let DepartureFromSourceAsPerTimeContainer = document.createElement('div');
+            DepartureFromSourceAsPerTimeContainer.setAttribute('class', 'container');
+            DepartureFromSourceAsPerTimeContainer.setAttribute('name', 'DepartureFromSourceAsPerTime');
 
 
-            numberOfStops.appendChild(numberOfStopsNameInput);
-            numberOfStops.appendChild(numberOfStopsLabel);
-            numberOfStops.appendChild(numberOfStopsPrice);
-            numberOfStops.addEventListener('click', () => {
-                if (document.querySelector[`input[name=numberOfStopsFromSource.name]`].checked) {
-                    this.appliedFilterCommonData(numberOfStopsFromSource.name, numberOfStopsFromSource.result, true);
-                } else {
-                    this.appliedFilterCommonData(numberOfStopsFromSource.name, numberOfStopsFromSource.result, false);
-                }
-            });
-            document.querySelector('[name=oneWayFilter]').shadowRoot.querySelector('[name=stoppage]').appendChild(numberOfStops);
+            let DepartureFromSourceAsPerTimeTitle = document.createElement('p');
+            DepartureFromSourceAsPerTimeTitle.setAttribute('class', 'title');
+            DepartureFromSourceAsPerTimeTitle.setAttribute('name', 'DepartureFromSourceAsPerTimeTitle');
+            DepartureFromSourceAsPerTimeTitle.textContent = `Departure From ${source}`;
 
+            
+            DepartureFromSourceAsPerTimeContainer.appendChild(DepartureFromSourceAsPerTimeTitle);
+            this.creatingButtonsAsPerTimeRangeFilter(DepartureFromSourceAsPerTimeContainer, DepartureFromSourceAsPerTime, 'departure');
+            document.querySelector('[name=filterPanel]').appendChild(DepartureFromSourceAsPerTimeContainer);
+        }
+
+        if (Object.keys(ArrivalAtDestinationAsPerTime).length > 0) {
+            let ArrivalAtDestinationAsPerTimeContainer = document.createElement('div');
+            ArrivalAtDestinationAsPerTimeContainer.setAttribute('class', 'container');
+            ArrivalAtDestinationAsPerTimeContainer.setAttribute('name', 'ArrivalAtDestinationAsPerTime');
+
+
+            let ArrivalAtDestinationAsPerTimeTitle = document.createElement('p');
+            ArrivalAtDestinationAsPerTimeTitle.setAttribute('class', 'title');
+            ArrivalAtDestinationAsPerTimeTitle.setAttribute('name', 'ArrivalAtDestinationAsPerTimeTitle');
+            ArrivalAtDestinationAsPerTimeTitle.textContent = `Arrival To ${destination}`;
+
+
+            ArrivalAtDestinationAsPerTimeContainer.appendChild(ArrivalAtDestinationAsPerTimeTitle);
+            this.creatingButtonsAsPerTimeRangeFilter(ArrivalAtDestinationAsPerTimeContainer, ArrivalAtDestinationAsPerTime, 'arrival');
+            document.querySelector('[name=filterPanel]').appendChild(ArrivalAtDestinationAsPerTimeContainer);
+        }
+
+        if (Object.keys(Airline).length > 0) {
+            let AirlineContainer = document.createElement('div');
+            AirlineContainer.setAttribute('class', 'container');
+            AirlineContainer.setAttribute('name', 'Airline');
+
+
+            let AirlineTitle = document.createElement('p');
+            AirlineTitle.setAttribute('class', 'title');
+            AirlineTitle.setAttribute('name', 'AirlineTitle');
+            AirlineTitle.textContent = "Airlines";
+
+
+            AirlineContainer.appendChild(AirlineTitle);
+            this.airlineFilter(AirlineContainer,Airline);
+            document.querySelector('[name=filterPanel]').appendChild(AirlineContainer);
         }
     }
 
@@ -226,13 +270,15 @@ export class OneWayResult {
             } else {
                 this.appliedFilterResult['common'] = this.appliedFilterResult[Object.keys(this.appliedFilterResult)[0]];
                 for (let i = 1; i < Object.keys(this.appliedFilterResult).length - 1; i++) {
-                    let commonResult = this.appliedFilterResult['common'].filter(object1 => this.appliedFilterResult[j].some(object2 => object1.id == object2.id));
+                    let commonResult = this.appliedFilterResult['common'].filter(object1 => this.appliedFilterResult[i].some(object2 => object1.id == object2.id));
                     this.appliedFilterResult['common'] = commonResult;
                 }
 
             }
 
         }
+
+
         this.display(this.appliedFilterResult['common']);
     }
 
@@ -241,7 +287,7 @@ export class OneWayResult {
 
     display(data) {
         document.querySelector('[name=sortPanel]').innerHTML = "";
-
+        this.createSortingElement(data);
 
         for (let i = 0; i < data.length; i++) {
             let value = data[i];
@@ -266,10 +312,12 @@ export class OneWayResult {
     createSortingElement(result) {
         let buttonContainer = document.createElement('div');
         buttonContainer.setAttribute('name', 'sorting');
-        buttonContainer.style.cssText = "display:flex;flex-direction: row;margin: 10px 0px;padding: 10px 10px;background-color: lightgrey";
+        buttonContainer.setAttribute('class','sortHeaders');
+
+
         var sortBy = document.createElement('div');
         sortBy.textContent = "Sort By: ";
-        sortBy.style.cssText = "flex-grow-1;align-self:center;color:black;font-size:20px;";
+        sortBy.setAttribute('class','sortBy');
         buttonContainer.appendChild(sortBy);
 
 
@@ -285,7 +333,7 @@ export class OneWayResult {
             const paramElement = document.createElement('div');
             paramElement.setAttribute('name', nameOfElement);
             paramElement.textContent = nameOfElement.replaceAll('_', ' ');
-            paramElement.style.cssText = "font-size:20px;margin:auto;width:200px;text-align:center";
+            paramElement.setAttribute('class','individualSortELement');
             paramElement.addEventListener('click', () => {
 
                 var arrowState;
@@ -342,7 +390,7 @@ export class OneWayResult {
     main() {
         this.flightResultColumnCreation();
         this.filterViewCreation(this.source, this.destination, this.#originalResult);
-        this.createSortingElement(this.#originalResult);
+        
         this.display(this.#displayData);
     }
 }
