@@ -1,68 +1,67 @@
-import { sortByPrice, sortByTime, sortByDuration } from '../commonfunctions/sorting.js';
+import { OneWayResult } from './OneWayResult/OneWayResult.js';
+import { appliedFilter } from '../commonfunctions/sorting.js';
 
-
-export class RoundWayResult {
-    #originalResult;
-    #displayData;
-    constructor(result, source, destination) {
-        this.#originalResult = result['response0'].data;
-        this.#displayData = result['response0'].data.slice(0, 50);
-        this.source = source;
-        this.destination = destination;
+export class RoundWayResult extends OneWayResult {
+    constructor(result, source, destination,tripNumber) {
+        super(result,source,destination,tripNumber);
     }
 
-    flightCardCreation() {
-        let container = document.createElement('div');
-        container.setAttribute('name', 'trip');
-        container.setAttribute('class', 'container');
-        container.style.cssText += "display:flex;flex-direction:row;flex-wrap:no-wrap;justify-content:flex-start;align-items:flex-start;row-gap:5px";
-        document.body.appendChild(container);
+    filterViewCreation(source, destination, result) {
+        console.log(source+" "+destination);
+        let appliedFilterResult = appliedFilter(result);
+        console.log(appliedFilterResult);
 
 
-        let column = document.createElement('div');
-        column.setAttribute('name', 'column0');
-        column.style.cssText += "display:flex;flex-direction:column;flex-wrap:no-wrap;justify-content:flex-start;align-items:flex-start";
-        document.querySelector('[name=trip]').appendChild(column);
+        var titleTextContent=[`Stops From ${source}`,`Stops From ${destination}`, `Departure From ${source}`,`Departure From ${destination}`,`Arrival To ${destination}`,`Arrival To ${source}`, 'Airlines'];
+        var name=[`numberOfStopsFrom${source}`,`numberOfStopsFrom${destination}`,`DepartureFrom${source}AsPerTime`,`DepartureFrom${destination}AsPerTime`,`ArrivalAt${destination}AsPerTime`,`ArrivalAt${source}AsPerTime`,'Airline'];
+        var  name2=['numberOfStopsFromSource','numberOfStopsFromSource','DepartureFromSourceAsPerTime','DepartureFromSourceAsPerTime','ArrivalAtDestinationAsPerTime','ArrivalAtDestinationAsPerTime','Airline']
 
-    }
-
-    display(data) {
-
-        for (let i=0;i<data.length;i++) {
-            let value=data[i];
-            if (document.querySelector(`[name="FlightCard${i}`) !== null) {
-                document.querySelector(`[name="FlightCard${i}`).remove();
+        for(let i=0;i<name.length;i++){
+            if (Object.keys(appliedFilterResult[name2[i]]).length > 0) {
+                let elementContainer = document.createElement('div');
+                elementContainer.setAttribute('class', 'container');
+                elementContainer.setAttribute('name', name[i]);
+    
+    
+                let title = document.createElement('p');
+                title.setAttribute('class', 'title');
+                title.setAttribute('name',  name[i]+'Title');
+                title.textContent = titleTextContent[i];
+    
+    
+                elementContainer.appendChild(title);
+                switch(name[i]){
+                    case name[0]: this.numberOfStopsFilter(elementContainer,appliedFilterResult['numberOfStopsFromSource'][0]);break;
+                    case name[1]: this.numberOfStopsFilter(elementContainer,appliedFilterResult['numberOfStopsFromSource'][1]);break;
+                    case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer,appliedFilterResult['DepartureFromSourceAsPerTime'][0], 'departure');break;                    
+                    case name[3]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer,appliedFilterResult['DepartureFromSourceAsPerTime'][1], 'departure');break;
+                    case name[4]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, appliedFilterResult['ArrivalAtDestinationAsPerTime'][0], 'arrival');break;
+                    case name[5]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, appliedFilterResult['ArrivalAtDestinationAsPerTime'][1], 'arrival');break;
+                    case name[6]: this.airlineFilter(elementContainer,appliedFilterResult['Airline']);break;
+                }
+               
+                document.querySelector('[name=filterPanel]').appendChild(elementContainer);
+    
             }
-
-            const card = new FlightCard(2);
-            card.setAttribute('name', "FlightCard" + i);
-            card.shadowRoot.querySelector("[name=carrier-name]").textContent = value.validatingAirlineCodes;
-            for (let j = 0; j < value.itineraries.length; j++) {
-                const numberofstops = value.itineraries[j].segments.length;
-                card.shadowRoot.querySelectorAll("[name=depart-time]")[j].appendChild(document.createTextNode(value.itineraries[j].segments[0].departure.at.split('T')[1]));
-                card.shadowRoot.querySelectorAll('[name="depart-place"]')[j].appendChild(document.createTextNode(value.itineraries[j].segments[0].departure.iataCode));
-                card.shadowRoot.querySelectorAll("[name=duration]")[j].appendChild(document.createTextNode(value.itineraries[j].duration.split('PT')[1]));
-                card.shadowRoot.querySelectorAll("[name=stoppage]")[j].appendChild(document.createTextNode(numberofstops));
-                card.shadowRoot.querySelectorAll("[name=arrival-time]")[j].appendChild(document.createTextNode(value.itineraries[j].segments[numberofstops - 1].arrival.at.split('T')[1]));
-                card.shadowRoot.querySelectorAll("[name=arrival-place]")[j].appendChild(document.createTextNode(value.itineraries[j].segments[numberofstops - 1].arrival.iataCode));
-            }
-            card.shadowRoot.querySelectorAll("[name=price]")[0].appendChild(document.createTextNode(value.price.total + " " + value.price.currency));
-            document.querySelector(`[name=column0]`).appendChild(card);
         }
     }
 
 
-    createSortingElement() {
-        let buttonContainer = document.createElement('div');
-        buttonContainer.setAttribute('name', 'sorting');
-        buttonContainer.style.cssText = "display:flex;flex-direction: row;margin: 10px 0px;padding: 10px 10px;background-color: lightgrey";
 
-        var buttonContainerColumn2 = document.createElement('div');
-        buttonContainerColumn2.style.cssText = "display:flex;flex-wrap:wrap;flex-grow:2;align-items:center;justify-content:space-between;align-items:center";
+
+    createSortingElement() {
+        let sortingHeaderContainer = document.createElement('div');
+        sortingHeaderContainer.setAttribute('name', 'sorting');
+        sortingHeaderContainer.setAttribute('class','sortHeaders');
+
+
+        var sortingColumnContainer = document.createElement('div');
+        sortingColumnContainer.style.cssText = "display:flex;flex-wrap:wrap;flex-grow:2;align-items:center;justify-content:space-between;align-items:center";
 
         var parameters = ['Sort By: ', `Departure_Time_From_${this.source}`, `Arrival_Time_To_${this.destination}`, `Duration_From_${this.source}`, `Departure_Time_From_${this.destination}`, `Arrival_Time_To_${this.source}`,
             `Duration_From_${this.destination}`, 'Price']
-
+        
+        
 
 
         var uparrow = document.createElement('i');
@@ -71,18 +70,18 @@ export class RoundWayResult {
         downarrow.setAttribute('class', 'fa fa-arrow-down');
 
 
-        for (let nameOfElement of parameters) {
+        for (let i=0;i<parameters.length;i++) {
             const paramElement = document.createElement('div');
-            paramElement.setAttribute('name', nameOfElement);
-            paramElement.textContent = nameOfElement.replaceAll('_', ' ');
-            if (nameOfElement == "Price" || nameOfElement == "Sort By: ") {
-                paramElement.style.cssText = "flex-grow-1;align-self:center;color:black;font-size:20px;";
+            paramElement.setAttribute('name', parameters[i]);
+            paramElement.textContent = parameters[i].replaceAll('_', ' ');
+            if (parameters[i] == "Price" || parameters[i] == "Sort By: ") {
+                paramElement.style.cssText = "flex-grow:1;align-self:center;color:black;font-size:20px;";
             } else {
                 paramElement.style.cssText = "flex: 1 1 30%;color:black;font-size:20px;text-align: center;";
             }
 
 
-            if (nameOfElement !== "Sort By: ") {
+            if (parameters[i] !== "Sort By: ") {
                 paramElement.addEventListener('click', () => {
                     var arrowState;
                     if (paramElement.contains(uparrow)) {
@@ -110,27 +109,27 @@ export class RoundWayResult {
 
 
                     if (arrowState == "up") {
-                        switch (nameOfElement) {
-                            case `Departure_Time_From_${this.source}`:
-                                this.roundTripSorting(this.#originalResult, 'Departure', "descending", 0); break;
-                            case `Arrival_Time_To_${this.destination}`: this.roundTripSorting(this.#originalResult, 'Arrival', "descending", 0); break;
-                            case `Departure_Time_From_${this.destination}`: this.roundTripSorting(this.#originalResult, 'Departure', "descending", 1); break;
-                            case `Arrival_Time_To_${this.source}`: this.roundTripSorting(this.#originalResult, 'Arrival', "descending", 1); break;
-                            case `Duration_From_${this.source}`: this.roundTripSorting(this.#originalResult, 'Duration', "descending", 0); break;
-                            case `Duration_From_${this.destination}`: this.roundTripSorting(this.#originalResult, 'Duration', "descending", 1); break;
-                            case 'Price': this.roundTripSorting(this.#originalResult, 'Price', "descending", 0); break;
+                        switch (parameters[i]) {
+                            case parameters[1]:
+                                this.sorting(this.originalResult, 'Departure', "descending", 0); break;
+                            case parameters[2]: this.sorting(this.originalResult, 'Arrival', "descending", 0); break;
+                            case parameters[3]: this.sorting(this.originalResult, 'Departure', "descending", 1); break;
+                            case parameters[4]: this.sorting(this.originalResult, 'Arrival', "descending", 1); break;
+                            case parameters[5]: this.sorting(this.originalResult, 'Duration', "descending", 0); break;
+                            case parameters[6]: this.sorting(this.originalResult, 'Duration', "descending", 1); break;
+                            case parameters[7]: this.sorting(this.originalResult, 'Price', "descending", 0); break;
                         }
                         paramElement.appendChild(downarrow);
                     } else {
-                        switch (nameOfElement) {
-                            case `Departure_Time_From_${this.source}`:
-                                this.roundTripSorting(this.#originalResult, 'Departure', "ascending", 0); break;
-                            case `Arrival_Time_To_${this.destination}`: this.roundTripSorting(this.#originalResult, 'Arrival', "ascending", 0); break;
-                            case `Departure_Time_From_${this.destination}`: this.roundTripSorting(this.#originalResult, 'Departure', "ascending", 1); break;
-                            case `Arrival_Time_To_${this.source}`: this.roundTripSorting(this.#originalResult, 'Arrival', "ascending", 1); break;
-                            case `Duration_From_${this.source}`: this.roundTripSorting(this.#originalResult, 'Duration', "ascending", 0); break;
-                            case `Duration_From_${this.destination}`: this.roundTripSorting(this.#originalResult, 'Duration', "ascending", 1); break;
-                            case 'Price': this.roundTripSorting(this.#originalResult, 'Price', "ascending", 0); break;
+                        switch (parameters[i]) {
+                            case parameters[1]:
+                                this.sorting(this.originalResult, 'Departure', "ascending", 0); break;
+                            case parameters[2]: this.sorting(this.originalResult, 'Arrival', "ascending", 0); break;
+                            case parameters[3]: this.sorting(this.originalResult, 'Departure', "ascending", 1); break;
+                            case parameters[4]: this.sorting(this.originalResult, 'Arrival', "ascending", 1); break;
+                            case parameters[5]: this.sorting(this.originalResult, 'Duration', "ascending", 0); break;
+                            case parameters[6]: this.sorting(this.originalResult, 'Duration', "ascending", 1); break;
+                            case parameters[7]: this.sorting(this.originalResult, 'Price', "ascending", 0); break;
                         }
                         paramElement.appendChild(uparrow);
                     }
@@ -141,33 +140,22 @@ export class RoundWayResult {
                 });
             }
 
-            if (nameOfElement == "Sort By: ") {
-                buttonContainer.appendChild(paramElement);
-            } else if (nameOfElement == "Price") {
-                buttonContainer.appendChild(buttonContainerColumn2);
-                buttonContainer.appendChild(paramElement);
+            if (parameters[i] == "Sort By: ") {
+                sortingHeaderContainer.appendChild(paramElement);
+            } else if (parameters[i] == "Price") {
+                sortingHeaderContainer.appendChild(sortingColumnContainer);
+                sortingHeaderContainer.appendChild(paramElement);
             } else {
-                buttonContainerColumn2.appendChild(paramElement);
+                sortingColumnContainer.appendChild(paramElement);
             }
 
         }
-        document.body.appendChild(buttonContainer);
-
-    }
-
-    roundTripSorting(originalData, sortBy, order, itinerariesValue) {
-        if (sortBy == "Duration") {
-            this.display(sortByDuration(originalData, order, itinerariesValue));
-        } else if (sortBy == "Price") {
-            this.display(sortByPrice(originalData, order, itinerariesValue));
-        } else {
-            this.display(sortByTime(originalData, sortBy, order, itinerariesValue));
-        }
+        document.querySelector('[name=sortPanel]').appendChild(sortingHeaderContainer);
     }
 
     main() {
-        this.createSortingElement();
-        this.flightCardCreation();
-        this.display(this.#displayData);
+        this.flightResultColumnCreation();
+        this.filterViewCreation(this.source,this.destination,this.originalResult);
+        this.display(this.displayData);
     }
 }

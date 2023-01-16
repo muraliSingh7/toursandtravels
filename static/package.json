@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "pouchdb-find": "^8.0.0"
+  }
+}

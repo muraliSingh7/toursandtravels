@@ -22,7 +22,8 @@ function getflightoffers(originLocationCode, destinationLocationCode, departureD
       departureDate: departureDate,
       adults: adults,
       children: children,
-      returnDate: returnDate
+      returnDate: returnDate,
+      // max:2000,
     })/*.then(function (response) {
           //console.log(response.data);
           res.status(200).send(response.data);
@@ -37,7 +38,8 @@ function getflightoffers(originLocationCode, destinationLocationCode, departureD
       destinationLocationCode: destinationLocationCode,
       departureDate: departureDate,
       adults: adults,
-      children: children
+      children: children,
+      // max:2000,
     })/*.then(function (response) {
           //console.log(response.data);
           res.status(200).send(response.data);
@@ -66,6 +68,8 @@ app.get('/flights/one-way/:from/:to/:departdate/:adult/:children', async(req, re
   //console.log(req.params);
   try {
     var response = await getflightoffers(req.params.from, req.params.to, req.params.departdate, null, req.params.adult, req.params.children);
+    // console.log("Response:");
+    // console.log(response);
     res.status(200).send(response.data);
   } catch (responseError) {
     //console.log(responseError);

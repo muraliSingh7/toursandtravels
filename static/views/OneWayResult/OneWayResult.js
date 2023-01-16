@@ -1,13 +1,28 @@
 import { sortByPrice, sortByTime, sortByDuration, appliedFilter } from '../../commonfunctions/sorting.js';
+import { getTripType } from '../../commonfunctions/triptype.js';
+import { FilterCache } from '../../filterCache/filterCache.js';
 export class OneWayResult {
-    #originalResult;
-    #displayData;
-    constructor(result, source, destination) {
-        this.#originalResult = result['response0'].data;
-        this.#displayData = result['response0'].data.slice(0, 50);
+    constructor(tripNumber, source, destination, result) {
         this.source = source;
         this.destination = destination;
+        this.originalResult = result['response' + tripNumber].data;
+        this.displayData = result['response' + tripNumber].data.slice(0, 50);
+        this.filter = new FilterCache(tripNumber, result);
         this.appliedFilterResult = {};
+        this.filterApplied = {};
+        this.tripNumber=tripNumber;
+    }
+
+    async appliedFilter(tripNumber){
+        let FilterElementsCreationResult={};
+        FilterElementsCreationResult['numberOfStopsFromSourceFromTrip'+tripNumber]=await this.filter.countofNumberofStops(0,0);
+
+        var time=[0,21600,43200,64800,86400];
+        for(let i=0;i<time.length-1;i++){
+            FilterElementsCreationResult['departureFromSourceAsPerTimeFromTrip'+tripNumber][time[i]+"-"+time[i+1]]=await this.filter.getPriceAsPerTime(0,0,"departure",time[i],time[i+1]);
+            FilterElementsCreationResult['arrivalAtDestinationAsPerTimeFromTrip'+tripNumber][time[i]+"-"+time[i+1]]=await this.filter.getPriceAsPerTime(0,0,"arrival",time[i],time[i+1]);
+        }
+        return FilterElementsCreationResult;
     }
 
     flightResultColumnCreation() {
@@ -15,26 +30,110 @@ export class OneWayResult {
         container.setAttribute('name', 'trip');
         container.setAttribute('class', 'resultViewContainer');
         document.body.appendChild(container);
-
+        document.querySelector("[name=trip]").innerHTML = "";
 
         let filterPanel = document.createElement('div');
         filterPanel.setAttribute('name', 'filterPanel');
-        filterPanel.setAttribute('class','filterPanel');
-        // column.style.cssText += "";
+        filterPanel.setAttribute('class', 'filterPanel');
         document.querySelector('[name=trip]').appendChild(filterPanel);
 
         let sortPanel = document.createElement('div');
         sortPanel.setAttribute('name', 'sortPanel');
-        filterPanel.setAttribute('class','sortPanel');
-        // column.style.cssText += "";
+        sortPanel.setAttribute('class', 'sortPanel');
         document.querySelector('[name=trip]').appendChild(sortPanel);
+
 
     }
 
+    filterViewCreation(source, destination) {
+        var FilterElementsCreationResult=appliedFilter(this.tripNumber);
+        var titleTextContent = [`Stops From ${source}`, `Departure From ${source}`,
+        `Arrival To ${destination}`, 'Airlines'];
+        var name = ['numberOfStopsFromSourceFromTrip'+this.tripNumber, 'departureFromSourceAsPerTimeFromTrip'+this.tripNumber,
+            'arrivalAtDestinationAsPerTimeFromTrip'+this.tripNumber, 'airline'];
+  
+        for (let i = 0; i < name.length; i++) {
+            if (Object.keys(FilterElementsCreationResult[name[i]]).length > 0) {
+                let elementContainer = document.createElement('div');
+                elementContainer.setAttribute('class', 'container');
+                elementContainer.setAttribute('name', name[i]);
 
-    creatingButtonsAsPerTimeRangeFilter(parentElement, resultAsPerTimeRange, departureOrArrival) {
+
+                let title = document.createElement('p');
+                title.setAttribute('class', 'title');
+                title.setAttribute('name', name[i] + 'Title');
+                title.textContent = titleTextContent[i];
+
+
+                elementContainer.appendChild(title);
+                switch (name[i]) {
+                    case name[0]: this.numberOfStopsFilter(elementContainer, FilterElementsCreationResult[name[0]]); break;
+                    case name[1]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, FilterElementsCreationResult[name[1]], 'departure'); break;
+                    case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, FilterElementsCreationResult[name[2]], 'arrival'); break;
+                    case name[3]: this.airlineFilter(elementContainer, FilterElementsCreationResult[name[3]]); break;
+                }
+
+                document.querySelector('[name=filterPanel]').appendChild(elementContainer);
+
+            }
+        }
+    }
+
+
+    numberOfStopsFilter(parentElement,filterResult) {
+        Object.keys(filterResult).forEach(stopNumber => {
+            let individualStopContainer = document.createElement('div');
+            individualStopContainer.setAttribute('class', 'subContainer');
+
+            let checkBoxAndLabelCombinedContainer = document.createElement('div');
+            checkBoxAndLabelCombinedContainer.setAttribute('class', ' checkBoxAndLabelCombinedContainer');
+
+            let checkBoxForStop = document.createElement('input');
+            checkBoxForStop.setAttribute('type', 'checkbox');
+            checkBoxForStop.setAttribute('name', stopNumber + '-Stop');
+
+
+            let labelForStop = document.createElement('label');
+            labelForStop.setAttribute('for', stopNumber + ' Stop');
+            labelForStop.setAttribute('class', 'titlelabel');
+            labelForStop.textContent = stopNumber + ' Stop ' + "(" + filterResult[stopNumber]['count'] + ")";
+
+
+            let minimumPriceForStop = document.createElement('p');
+            minimumPriceForStop.setAttribute('name', 'minimumPriceForStop');
+            minimumPriceForStop.setAttribute('class', 'price');
+            minimumPriceForStop.textContent = filterResult[stopNumber]['minimumPrice'];
+
+
+            checkBoxAndLabelCombinedContainer.appendChild(checkBoxForStop);
+            checkBoxAndLabelCombinedContainer.appendChild(labelForStop);
+
+
+            individualStopContainer.appendChild(checkBoxAndLabelCombinedContainer);
+            individualStopContainer.appendChild(minimumPriceForStop);
+
+
+
+            individualStopContainer.addEventListener('click', () => {
+                let filterFromNumberOfStopsFromSource={};
+                filterFromNumberOfStopsFromSource['numberOfStopsFromSourceFromTrip'+this.tripNumber]=stopNumber;
+                if (checkBoxForStop.checked) {
+                    this.appliedFilterCommonData(filterFromNumberOfStopsFromSource,true);
+                } else {
+                    this.appliedFilterCommonData(filterFromNumberOfStopsFromSource,false);
+                }
+            });
+
+
+            parentElement.appendChild(individualStopContainer);
+        });
+    }
+
+
+    creatingButtonsAsPerTimeRangeFilter(parentElement, departureOrArrival,resultAsPerTimeRange) {
         var timing = ['0AM-6AM', '6AM-12PM', '12PM-6PM', '6PM-12AM'];
-        var timeHeader=['Before 6AM', '6AM-12PM', '12PM-6PM', 'After 6PM']
+        var timeHeader = ['Before 6AM', '6AM-12PM', '12PM-6PM', 'After 6PM']
+        var time=[0,21600,43200,64800,86400];
         var imgSource = ["https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/morning_active.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/noon_inactive.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/evening_inactive.png?v=1",
@@ -42,283 +141,195 @@ export class OneWayResult {
         ];
 
 
-        
         for (let i = 0; i < timing.length; i++) {
-            if (resultAsPerTimeRange[timing[i]]) {
-                let buttonContainer = document.createElement('div');
-                buttonContainer.setAttribute('class', 'timeIntervalButton');
+            if (resultAsPerTimeRange[time[i]+"-"+time[i+1]]) {
+                let timeIntervalButton = document.createElement('div');
+                filterByTime={};
+                timeIntervalButton.setAttribute('class', 'timeIntervalButton');
 
 
                 if (departureOrArrival == 'departure') {
-                    buttonContainer.setAttribute('departure-time', timing[i]);
+                    timeIntervalButton.setAttribute('departure-time', timing[i]);
+                    filterByTime['departureFromSourceAsPerTimeFromTrip'+this.tripNumber]=[time[i],time[i+1]];
                 } else {
-                    buttonContainer.setAttribute('arrival-time', timing[i]);
+                    timeIntervalButton.setAttribute('arrival-time', timing[i]);
+                    filterByTime['arrivalAtDestinationAsPerTimeFromTrip'+this.tripNumber]=[time[i],time[i+1]];
                 }
 
 
-                let img = document.createElement('img');
-                img.setAttribute('src', imgSource[i]);
-                img.setAttribute('class','buttonimg');
-                buttonContainer.appendChild(img);
+                let timeIntervalImage = document.createElement('img');
+                timeIntervalImage.setAttribute('src', imgSource[i]);
+                timeIntervalImage.setAttribute('class', 'timeIntervalImage');
+                timeIntervalButton.appendChild(timeIntervalImage);
 
 
-                let timeTitle = document.createElement('p');
-                timeTitle.setAttribute('class', 'timeTitle');
-                timeTitle.textContent=timeHeader[i];
-                buttonContainer.appendChild(timeTitle);
+                let timeIntervalTitle = document.createElement('p');
+                timeIntervalTitle.setAttribute('class', 'timeIntervalTitle');
+                timeIntervalTitle.textContent = timeHeader[i];
+                timeIntervalButton.appendChild(timeIntervalTitle);
 
 
-                let buttonPrice = document.createElement('p');
-                buttonPrice.setAttribute('class', 'buttonPrice');
-                buttonPrice.textContent = resultAsPerTimeRange[timing[i]]['price'];
-                buttonContainer.appendChild(buttonPrice);
+                let timeIntervalMinimumPrice = document.createElement('p');
+                timeIntervalMinimumPrice.setAttribute('class', 'buttonPrice');
+                timeIntervalMinimumPrice.textContent = resultAsPerTimeRange[timing[i]];
+                timeIntervalButton.appendChild(timeIntervalMinimumPrice);
 
 
-                buttonContainer.addEventListener('click', () => {
-                    if (buttonContainer.style.backgroundColor == "none") {
-                        buttonContainer.style.backgroundColor = "green";
-                        this.appliedFilterCommonData(timing[i], resultAsPerTimeRange[timing[i]]['result'], true);
+                timeIntervalButton.addEventListener('click', () => {
+                    if (timeIntervalButton.style.backgroundColor == "transparent") {
+                        timeIntervalButton.style.backgroundColor = "green";
+                        this.appliedFilterCommonData(filterByTime, true);
                     }
 
-                    if (buttonContainer.style.backgroundColor == "green") {
-                        buttonContainer.style.backgroundColor = "none";
-                        this.appliedFilterCommonData(timing[i], resultAsPerTimeRange[timing[i]]['result'], false);
+                    if (timeIntervalButton.style.backgroundColor == "green") {
+                        timeIntervalButton.style.backgroundColor = "transparent";
+                        this.appliedFilterCommonData(filterByTime, false);
                     }
                 });
 
 
-                parentElement.appendChild(buttonContainer);
+                parentElement.appendChild(timeIntervalButton);
 
             }
         }
     }
 
-    numberOfStopsFilter(parentElement, filterResult) {
-        Object.keys(filterResult).forEach(stopNumber => {
-            let numberOfStops = document.createElement('div');
-            numberOfStops.setAttribute('class', 'subContainer');
-
-
-            let numberOfStopsNameInput = document.createElement('input');
-            numberOfStopsNameInput.setAttribute('type', 'checkbox');
-            numberOfStopsNameInput.setAttribute('name', stopNumber + '-Stop');
-
-
-            let numberOfStopsLabel = document.createElement('label');
-            numberOfStopsLabel.setAttribute('for', stopNumber + ' Stop');
-            numberOfStopsLabel.setAttribute('class','titlelabel');
-            numberOfStopsLabel.textContent = stopNumber + ' Stop ' + "(" + filterResult[stopNumber]['count'] + ")";
-
-
-            let numberOfStopsPrice = document.createElement('p');
-            numberOfStopsPrice.setAttribute('name', 'numberOfStopsPrice');
-            numberOfStopsPrice.setAttribute('class','price');
-            numberOfStopsPrice.textContent = filterResult[stopNumber]['minimumPrice'];
-
-
-            numberOfStops.appendChild(numberOfStopsNameInput);
-            numberOfStops.appendChild(numberOfStopsLabel);
-            numberOfStops.appendChild(numberOfStopsPrice);
-
-
-            numberOfStops.addEventListener('click', () => {
-                if (numberOfStopsNameInput.checked) {
-                    this.appliedFilterCommonData(stopNumber, filterResult[stopNumber]['result'], true);
-                } else {
-                    this.appliedFilterCommonData(stopNumber, filterResult[stopNumber]['result'], false);
-                }
-            });
-
-
-            parentElement.appendChild(numberOfStops);
-        });
-    }
 
     airlineFilter(parentELement, filterResult) {
         Object.keys(filterResult).forEach(airlineCode => {
-            let airline = document.createElement('div');
-            airline.setAttribute('class','subContainer');
+            let individualAirlineContainer = document.createElement('div');
+            individualAirlineContainer.setAttribute('class', 'subContainer');
 
-            let airlineNameInput = document.createElement('input');
-            airlineNameInput.setAttribute('type', 'checkbox');
-            airlineNameInput.setAttribute('name', airlineCode);
+            let checkBoxAndLabelCombinedContainer = document.createElement('div');
+            checkBoxAndLabelCombinedContainer.setAttribute('class', ' checkBoxAndLabelCombinedContainer');
 
-
-            let airlineLabel = document.createElement('label');
-            airlineLabel.setAttribute('for', airlineCode);
-            airlineLabel.setAttribute('class','titlelabel');
-            airlineLabel.textContent = airlineCode + "(" + filterResult[airlineCode]['count'] + ")";
+            let checkboxForAirline = document.createElement('input');
+            checkboxForAirline.setAttribute('type', 'checkbox');
+            checkboxForAirline.setAttribute('name', airlineCode);
 
 
-            let airlinePrice = document.createElement('p');
-            airlinePrice.setAttribute('class', 'airlinePrice');
-            airlinePrice.setAttribute('class','price');
-            airlinePrice.textContent = filterResult[airlineCode]['minimumPrice'];
+            let labelForAirline = document.createElement('label');
+            labelForAirline.setAttribute('for', airlineCode);
+            labelForAirline.setAttribute('class', 'titlelabel');
+            individualAirlineContainer.appendChild(checkboxForAirline);
+            labelForAirline.textContent = airlineCode + "(" + filterResult[airlineCode]['count'] + ")";
 
 
-            airline.appendChild(airlineNameInput);
-            airline.appendChild(airlineLabel);
-            airline.appendChild(airlinePrice);
+            let airlineMinimumPrice = document.createElement('p');
+            airlineMinimumPrice.setAttribute('class', 'airlineMinimumPrice');
+            airlineMinimumPrice.setAttribute('class', 'price');
+            airlineMinimumPrice.textContent = filterResult[airlineCode]['minimumPrice'];
+
+            checkBoxAndLabelCombinedContainer.appendChild(checkboxForAirline);
+            checkBoxAndLabelCombinedContainer.appendChild(labelForAirline);
 
 
-            airline.addEventListener('click', () => {
-                if (airlineNameInput.checked) {
-                    this.appliedFilterCommonData(airlineCode, airline['result'], true);
+            individualAirlineContainer.appendChild(checkBoxAndLabelCombinedContainer);
+            individualAirlineContainer.appendChild(airlineMinimumPthis.filterToBeAppliedrice);
+
+
+            individualAirlineContainer.addEventListener('click', () => {
+                if (checkboxForAirline.checked) {
+                    this.appliedFilterCommonData(airlineCode, filterResult[airlineCode]['result'], true);
                 } else {
-                    this.appliedFilterCommonData(airlineCode, airline['result'], false);
+                    this.appliedFilterCommonData(airlineCode, filterResult[airlineCode]['result'], false);
                 }
             });
 
 
-            parentELement.appendChild(airline);
+            parentELement.appendChild(individualAirlineContainer);
         });
 
     }
 
-    filterViewCreation(source, destination, result) {
-        let appliedFilterResult = appliedFilter(result);
-        console.log(appliedFilterResult);
-        let numberOfStopsFromSource = appliedFilterResult['numberOfStopsFromSource'];
-        let DepartureFromSourceAsPerTime = appliedFilterResult['DepartureFromSourceAsPerTime'];
-        let ArrivalAtDestinationAsPerTime = appliedFilterResult['ArrivalAtDestinationAsPerTime'];
-        let Airline = appliedFilterResult['Airline'];
-
-
-        if (Object.keys(numberOfStopsFromSource).length > 0) {
-            let numberOfStopsContainer = document.createElement('div');
-            numberOfStopsContainer.setAttribute('class', 'container');
-            numberOfStopsContainer.setAttribute('name', 'numberOfStops');
-
-
-            let numberOfStopsTitle = document.createElement('p');
-            numberOfStopsTitle.setAttribute('class', 'title');
-            numberOfStopsTitle.setAttribute('name', 'numberOfStopsTitle');
-            numberOfStopsTitle.textContent = `Stops From ${source}`;
-
-
-            numberOfStopsContainer.appendChild(numberOfStopsTitle);
-            this.numberOfStopsFilter(numberOfStopsContainer,numberOfStopsFromSource);
-            document.querySelector('[name=filterPanel]').appendChild(numberOfStopsContainer);
-
-        }
-
-        if (Object.keys(DepartureFromSourceAsPerTime).length > 0) {
-            let DepartureFromSourceAsPerTimeContainer = document.createElement('div');
-            DepartureFromSourceAsPerTimeContainer.setAttribute('class', 'container');
-            DepartureFromSourceAsPerTimeContainer.setAttribute('name', 'DepartureFromSourceAsPerTime');
-
-
-            let DepartureFromSourceAsPerTimeTitle = document.createElement('p');
-            DepartureFromSourceAsPerTimeTitle.setAttribute('class', 'title');
-            DepartureFromSourceAsPerTimeTitle.setAttribute('name', 'DepartureFromSourceAsPerTimeTitle');
-            DepartureFromSourceAsPerTimeTitle.textContent = `Departure From ${source}`;
-
-            
-            DepartureFromSourceAsPerTimeContainer.appendChild(DepartureFromSourceAsPerTimeTitle);
-            this.creatingButtonsAsPerTimeRangeFilter(DepartureFromSourceAsPerTimeContainer, DepartureFromSourceAsPerTime, 'departure');
-            document.querySelector('[name=filterPanel]').appendChild(DepartureFromSourceAsPerTimeContainer);
-        }
-
-        if (Object.keys(ArrivalAtDestinationAsPerTime).length > 0) {
-            let ArrivalAtDestinationAsPerTimeContainer = document.createElement('div');
-            ArrivalAtDestinationAsPerTimeContainer.setAttribute('class', 'container');
-            ArrivalAtDestinationAsPerTimeContainer.setAttribute('name', 'ArrivalAtDestinationAsPerTime');
-
-
-            let ArrivalAtDestinationAsPerTimeTitle = document.createElement('p');
-            ArrivalAtDestinationAsPerTimeTitle.setAttribute('class', 'title');
-            ArrivalAtDestinationAsPerTimeTitle.setAttribute('name', 'ArrivalAtDestinationAsPerTimeTitle');
-            ArrivalAtDestinationAsPerTimeTitle.textContent = `Arrival To ${destination}`;
-
-
-            ArrivalAtDestinationAsPerTimeContainer.appendChild(ArrivalAtDestinationAsPerTimeTitle);
-            this.creatingButtonsAsPerTimeRangeFilter(ArrivalAtDestinationAsPerTimeContainer, ArrivalAtDestinationAsPerTime, 'arrival');
-            document.querySelector('[name=filterPanel]').appendChild(ArrivalAtDestinationAsPerTimeContainer);
-        }
-
-        if (Object.keys(Airline).length > 0) {
-            let AirlineContainer = document.createElement('div');
-            AirlineContainer.setAttribute('class', 'container');
-            AirlineContainer.setAttribute('name', 'Airline');
-
-
-            let AirlineTitle = document.createElement('p');
-            AirlineTitle.setAttribute('class', 'title');
-            AirlineTitle.setAttribute('name', 'AirlineTitle');
-            AirlineTitle.textContent = "Airlines";
-
-
-            AirlineContainer.appendChild(AirlineTitle);
-            this.airlineFilter(AirlineContainer,Airline);
-            document.querySelector('[name=filterPanel]').appendChild(AirlineContainer);
-        }
-    }
-
-    appliedFilterCommonData(filterName, filterResult, filterAddOrRemove) {
-        if (filterAddOrRemove) {
-            this.appliedFilterResult[filterName] = filterResult;
-            if (Object.keys(this.appliedFilterResult).length == 1) {
-                this.appliedFilterResult['common'] = filterResult;
-            } else {
-                let commonResult = this.appliedFilterResult['common'].filter(object1 => this.appliedFilterResult[filterName].some(object2 => object1.id == object2.id));
-                this.appliedFilterResult['common'] = commonResult;
-            }
-        } else {
-            delete this.appliedFilterResult.filterName;
-            if (Object.keys(this.appliedFilterResult).length == 1) {
-                this.appliedFilterResult['common'] = this.#originalResult;
-            } else {
-                this.appliedFilterResult['common'] = this.appliedFilterResult[Object.keys(this.appliedFilterResult)[0]];
-                for (let i = 1; i < Object.keys(this.appliedFilterResult).length - 1; i++) {
-                    let commonResult = this.appliedFilterResult['common'].filter(object1 => this.appliedFilterResult[i].some(object2 => object1.id == object2.id));
-                    this.appliedFilterResult['common'] = commonResult;
+    async appliedFilterCommonData(filterBy,addOrRemove,sortBy){
+        if(addOrRemove){
+            let keysOfFilterApplied=Objject.keys(this.filterApplied);
+            Object.keys(filterBy).forEach(filter=>{
+                if(!keysOfFilterApplied.includes(filter)){
+                    this.filterApplied[filter]=[];
                 }
-
-            }
-
+                this.filterApplied[filter].push(filterBy[filter]);
+            });
+        }else{
+            Object.keys(filterBy).forEach(filter=>{//accessing keys of given filter which is to be removed
+                if(keysOfFilterApplied.includes(filter)){//checking that key inside originalfilter which is passed to database for filtering
+                    for(let currentIndex=0;currentIndex<this.filterApplied[filter].length;i++)
+                    {//if that key is found we access each value of that particular key from original filter
+                        let value=this.filterApplied[filter][currentIndex];
+                        if(value.length==filterBy[filter].length){
+                            //if value of originalfilter key length equals to the value of filter key 
+                            //which we want to delete we check that value length 
+                            let flagForDeleting=true;
+                            for(let i=0;i<value.length;i++){
+                                if(value[i]!=filterBy[filter][i]){
+                                    flagForDeleting=false;
+                                    break;
+                                }
+                            }
+                            if(flagForDeleting==true){
+                                delete this.filterApplied[filter][currentIndex];
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
         }
-
-
-        this.display(this.appliedFilterResult['common']);
+        let result=this.filter.filtering(this.filterApplied);
+        this.display(result);
     }
 
-
-
-
-    display(data) {
-        document.querySelector('[name=sortPanel]').innerHTML = "";
-        this.createSortingElement(data);
-
-        for (let i = 0; i < data.length; i++) {
-            let value = data[i];
-            const card = new FlightCard(1);
-            card.setAttribute('name', "FlightCard" + i);
-            card.shadowRoot.querySelector("[name=carrier-name]").textContent = value.validatingAirlineCodes;
-            for (let j = 0; j < value.itineraries.length; j++) {
-                const numberofstops = value.itineraries[j].segments.length;
-                card.shadowRoot.querySelectorAll("[name=depart-time]")[j].appendChild(document.createTextNode(value.itineraries[j].segments[0].departure.at.split('T')[1]));
-                card.shadowRoot.querySelectorAll('[name="depart-place"]')[j].appendChild(document.createTextNode(value.itineraries[j].segments[0].departure.iataCode));
-                card.shadowRoot.querySelectorAll("[name=duration]")[j].appendChild(document.createTextNode(value.itineraries[j].duration.split('PT')[1]));
-                card.shadowRoot.querySelectorAll("[name=stoppage]")[j].appendChild(document.createTextNode(numberofstops));
-                card.shadowRoot.querySelectorAll("[name=arrival-time]")[j].appendChild(document.createTextNode(value.itineraries[j].segments[numberofstops - 1].arrival.at.split('T')[1]));
-                card.shadowRoot.querySelectorAll("[name=arrival-place]")[j].appendChild(document.createTextNode(value.itineraries[j].segments[numberofstops - 1].arrival.iataCode));
-            }
-            card.shadowRoot.querySelectorAll("[name=price]")[0].appendChild(document.createTextNode(value.price.total + " " + value.price.currency));
-            document.querySelector(`[name=sortPanel]`).appendChild(card);
+    async sorting(sortBy,direction){
+        if(direction=="ascending"){
+            this.filter.filtering(this.filterApplied,);
+        }else{
+            this.filter.filtering(this.filterApplied,);
         }
     }
+
+    // appliedFilterCommonData(filterName, filterResult, filterAddOrRemove) {
+    //     if (filterAddOrRemove) {
+    //         this.appliedFilterResult[filterName] = filterResult;
+    //         if (Object.keys(this.appliedFilterResult).length == 1) {
+    //             this.appliedFilterResult['common'] = filterResult;
+    //         } else {
+    //             let commonResult = this.appliedFilterResult['common'].filter(object1 => this.appliedFilterResult[filterName].some(object2 => object1.id == object2.id));
+    //             this.appliedFilterResult['common'] = commonResult;
+    //         }
+    //     } else {
+    //         delete this.appliedFilterResult[filterName];
+    //         if (Object.keys(this.appliedFilterResult).length <= 1) {
+    //             this.appliedFilterResult['common'] = this.originalResult;
+    //         } else {
+    //             this.appliedFilterResult['common'] = this.appliedFilterResult[Object.keys(this.appliedFilterResult)[0]];
+    //             for (let i = 1; i < Object.keys(this.appliedFilterResult).length - 1; i++) {
+    //                 let commonResult = this.appliedFilterResult['common'].filter(object1 => this.appliedFilterResult[i].some(object2 => object1.id == object2.id));
+    //                 this.appliedFilterResult['common'] = commonResult;
+    //             }
+
+    //         }
+
+    //     }
+
+    //     console.log(this.appliedFilterResult);
+    //     this.display(this.appliedFilterResult['common']);
+    // }
+
+    
+
 
 
     createSortingElement(result) {
-        let buttonContainer = document.createElement('div');
-        buttonContainer.setAttribute('name', 'sorting');
-        buttonContainer.setAttribute('class','sortHeaders');
+        let sortingHeaderContainer = document.createElement('div');
+        sortingHeaderContainer.setAttribute('name', 'sorting');
+        sortingHeaderContainer.setAttribute('class', 'sortHeaders');
 
 
         var sortBy = document.createElement('div');
         sortBy.textContent = "Sort By: ";
-        sortBy.setAttribute('class','sortBy');
-        buttonContainer.appendChild(sortBy);
+        sortBy.setAttribute('class', 'sortBy');
+        sortingHeaderContainer.appendChild(sortBy);
 
 
 
@@ -333,7 +344,7 @@ export class OneWayResult {
             const paramElement = document.createElement('div');
             paramElement.setAttribute('name', nameOfElement);
             paramElement.textContent = nameOfElement.replaceAll('_', ' ');
-            paramElement.setAttribute('class','individualSortELement');
+            paramElement.setAttribute('class', 'individualSortELement');
             paramElement.addEventListener('click', () => {
 
                 var arrowState;
@@ -360,10 +371,10 @@ export class OneWayResult {
 
 
                 if (arrowState == "up") {
-                    this.OneWaySorting(result, nameOfElement, "descending");
+                    this.appliedFilterCommonData();
                     paramElement.appendChild(downarrow);
                 } else {
-                    this.OneWaySorting(result, nameOfElement, "ascending");
+                    this.appliedFilterCommonData();
                     paramElement.appendChild(uparrow);
                 }
 
@@ -371,26 +382,54 @@ export class OneWayResult {
                 paramElement.style.color = "#023047";
                 paramElement.style.fontSize = "25px";
             });
-            buttonContainer.appendChild(paramElement);
+            sortingHeaderContainer.appendChild(paramElement);
         }
-        document.querySelector('[name=sortPanel]').appendChild(buttonContainer);
+        document.querySelector('[name=sortPanel]').appendChild(sortingHeaderContainer);
 
     }
 
-    OneWaySorting(originalData, sortBy, order) {
-        if (sortBy == "Duration") {
-            this.display(sortByDuration(originalData, order, 0));
-        } else if (sortBy == "Price") {
-            this.display(sortByPrice(originalData, order, 0));
-        } else {
-            this.display(sortByTime(originalData, sortBy, order, 0));
+    // sorting(originalData, sortBy, order, itinerariesValue) {
+    //     if (sortBy == "Duration") {
+    //         this.display(sortByDuration(originalData, order, itinerariesValue));
+    //     } else if (sortBy == "Price") {
+    //         this.display(sortByPrice(originalData, order, itinerariesValue));
+    //     } else {
+    //         this.display(sortByTime(originalData, sortBy, order, itinerariesValue));
+    //     }
+    // }
+
+
+    display(data) {
+        document.querySelector('[name=sortPanel]').innerHTML = "";
+        this.createSortingElement(data);
+
+        let resultPanel = document.createElement('div');
+        resultPanel.setAttribute('name', 'resultPanel');
+        resultPanel.setAttribute('class', 'resultPanel');
+        document.querySelector('[name=sortPanel]').appendChild(resultPanel);
+
+
+        for (let i = 0; i < Math.min(data.length, 50); i++) {
+            const card = getTripType() == "One-Way" || getTripType() == "Multi-City" ? new FlightCard(1) : new FlightCard(2);
+            card.setAttribute('name', "FlightCard" + i);
+            card.shadowRoot.querySelector("[name=carrier-name]").textContent = data[i]['airline'];
+            for (let j = 0; j < tripNumber; j++) {
+                card.shadowRoot.querySelectorAll("[name=depart-time]")[j].textContent = data[i]['departureFromSourceAsPerTime'][j];
+                card.shadowRoot.querySelectorAll('[name="depart-place"]')[j].textContent = data[i]['source'][j];
+                card.shadowRoot.querySelectorAll("[name=duration]")[j].textContent = data[i]['duration'][j];
+                card.shadowRoot.querySelectorAll("[name=stoppage]")[j].textContent = data[i]['numberOfStopsFromSource'][j];
+                card.shadowRoot.querySelectorAll("[name=arrival-time]")[j].textContent = data[i]['arrivalAtDestiationAsPerTime'];
+                card.shadowRoot.querySelectorAll("[name=arrival-place]")[j].textContent = data[i]['destination'][j];
+            }
+            card.shadowRoot.querySelector("[name=price]").textContent = data[i]['price'];
+
+            document.querySelector(`[name=resultPanel]`).appendChild(card);
         }
     }
 
     main() {
         this.flightResultColumnCreation();
-        this.filterViewCreation(this.source, this.destination, this.#originalResult);
-        
-        this.display(this.#displayData);
+        this.filterViewCreation(this.source, this.destination, this.originalResult);
+        this.display(this.displayData);
     }
 }

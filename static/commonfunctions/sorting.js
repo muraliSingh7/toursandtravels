@@ -1,6 +1,3 @@
-import { shallowCopy } from '../commonfunctions/deepcopy.js';
-
-
 
 export function sortByPrice(data, order, itinerariesValue) {
     let result_By_Price = data;
@@ -181,78 +178,96 @@ function timeCompare(hour_Of_A, hour_Of_B, minutes_Of_A, minutes_Of_B, order) {
 }
 
 
- export function appliedFilter(result) {
+export function appliedFilter(result) {
+    console.log(result);
     var numberOfStopsFromSource = {};
     var DepartureFromSourceAsPerTime = {};
     var ArrivalAtDestinationAsPerTime = {};
     var Airline = {};
-    
+
     for (let i = 0; i < result.length; i++) {
         let value = result[i];
         let airlineCode = value.validatingAirlineCodes;
         let price = value.price.total;
-        let numberOfStops=value.itineraries[0].segments.length;
-        let arrivalTime=value.itineraries[0].segments[numberOfStops - 1].arrival.at.split('T')[1].match(/\d+/g);
-        let departureTime=value.itineraries[0].segments[0].departure.at.split('T')[1].match(/\d+/g);
+
         if (Airline[airlineCode]) {
             Airline[airlineCode]['count'] = Airline[airlineCode]['count'] + 1;
             Airline[airlineCode]['result'].push(value);
             Airline[airlineCode]['minimumPrice'] = Math.min(Number(Airline[airlineCode]['minimumPrice']), Number(price));
         } else {
-            Airline[airlineCode]={};
+            Airline[airlineCode] = {};
             Airline[airlineCode] = { 'count': 1, 'result': [value], 'minimumPrice': price };
         }
 
-        if(numberOfStopsFromSource[numberOfStops]){
-            numberOfStopsFromSource[numberOfStops]['count']=Number(numberOfStopsFromSource[numberOfStops]['count'])+1;
-            numberOfStopsFromSource[numberOfStops]['minimumPrice']=Math.min(Number(numberOfStopsFromSource[numberOfStops]['minimumPrice']),price);
-            numberOfStopsFromSource[numberOfStops]['result'].push(value);
-        }else{
-            numberOfStopsFromSource[numberOfStops]={'count':1,'minimumPrice': price,'result':[value]};
-        }
-        DepartureFromSourceAsPerTime =timeFilter(value,departureTime,price,DepartureFromSourceAsPerTime);
-        ArrivalAtDestinationAsPerTime =timeFilter(value,arrivalTime,price,ArrivalAtDestinationAsPerTime);
-    }
 
-    return {'numberOfStopsFromSource':numberOfStopsFromSource,'DepartureFromSourceAsPerTime':DepartureFromSourceAsPerTime,'ArrivalAtDestinationAsPerTime':ArrivalAtDestinationAsPerTime,'Airline':Airline}
-    
+        for (let j = 0; j < value.itineraries.length; j++) {
+            let numberOfStops = value.itineraries[j].segments.length;
+
+            if (numberOfStopsFromSource.hasOwnProperty(j) && numberOfStopsFromSource[j].hasOwnProperty(numberOfStops)) {
+                numberOfStopsFromSource[j][numberOfStops]['count'] = Number(numberOfStopsFromSource[j][numberOfStops]['count']) + 1;
+                numberOfStopsFromSource[j][numberOfStops]['minimumPrice'] = Math.min(Number(numberOfStopsFromSource[j][numberOfStops]['minimumPrice']), price);
+                numberOfStopsFromSource[j][numberOfStops]['result'].push(value);
+            } else {
+                numberOfStopsFromSource[j]={}
+                numberOfStopsFromSource[j][numberOfStops] = { 'count': 1, 'minimumPrice': price, 'result': [value] };
+            }
+
+
+            let departureTime = value.itineraries[j].segments[0].departure.at.split('T')[1];
+            let arrivalTime = value.itineraries[j].segments[numberOfStops - 1].arrival.at.split('T')[1];
+            
+            if(!DepartureFromSourceAsPerTime.hasOwnProperty(j)){
+                DepartureFromSourceAsPerTime[j]={};
+            }
+
+            if(!ArrivalAtDestinationAsPerTime.hasOwnProperty(j)){
+                ArrivalAtDestinationAsPerTime[j] ={};
+            }
+
+
+            DepartureFromSourceAsPerTime[j]= timeFilter(value, departureTime, price, DepartureFromSourceAsPerTime[j]);
+            ArrivalAtDestinationAsPerTime[j]= timeFilter(value, arrivalTime, price, ArrivalAtDestinationAsPerTime[j]);
+        }
+
+        return { 'numberOfStopsFromSource': numberOfStopsFromSource, 'DepartureFromSourceAsPerTime': DepartureFromSourceAsPerTime, 'ArrivalAtDestinationAsPerTime': ArrivalAtDestinationAsPerTime, 'Airline': Airline }
+    }
 }
 
 
-function timeFilter(result,time,price,filterTimeStoringResult){
-    if(Number(time[0])>=6 && Number(time[0])<=12 && Number(time[1])<=0 && Number(time[2])<=0 ){
-        if((Number(time[0])==12 && Number(time[1])<=0 && Number(time[2])<=0) ||(Number(time[0])<12)) {
-            if(filterTimeStoringResult.hasOwnProperty('6AM-12PM')){
+function timeFilter(result, time, price, filterTimeStoringResult) {
+    if (Number(time[0]) >= 6 && Number(time[0]) <= 12 && Number(time[1]) <= 0 && Number(time[2]) <= 0) {
+        if ((Number(time[0]) == 12 && Number(time[1]) <= 0 && Number(time[2]) <= 0) || (Number(time[0]) < 12)) {
+            if (filterTimeStoringResult.hasOwnProperty('6AM-12PM')) {
                 filterTimeStoringResult['6AM-12PM']['result'].push(result);
                 //console.log(filterTimeStoringResult);
                 filterTimeStoringResult['6AM-12PM']['price'] = Math.min(Number(filterTimeStoringResult['6AM-12PM']['price']), Number(price));
-            }else{
-                filterTimeStoringResult['6AM-12PM']={'result':[result],'price':price};
+            } else {
+                filterTimeStoringResult['6AM-12PM'] = { 'result': [result], 'price': price };
             }
         }
-    }else if(Number(time[0])<6 && Number(time[0])>=0){
-        if(filterTimeStoringResult.hasOwnProperty('0AM-6AM')){
+    } else if (Number(time[0]) < 6 && Number(time[0]) >= 0) {
+        if (filterTimeStoringResult.hasOwnProperty('0AM-6AM')) {
             filterTimeStoringResult['0AM-6AM']['result'].push(result);
             //console.log(filterTimeStoringResult);
-            filterTimeStoringResult['0AM-6AM']['price']= Math.min(Number(filterTimeStoringResult['0AM-6AM']['price']), Number(price));
-        }else{ 
-            filterTimeStoringResult['0AM-6AM']={'result':[result],'price':price};
+            filterTimeStoringResult['0AM-6AM']['price'] = Math.min(Number(filterTimeStoringResult['0AM-6AM']['price']), Number(price));
+        } else {
+            filterTimeStoringResult['0AM-6AM'] = { 'result': [result], 'price': price };
         }
-    }else if(Number(time[0])>=12 && Number(time[1])>0 && Number(time[2])>0 && Number(time[0])<18){
-        if(filterTimeStoringResult.hasOwnProperty('12PM-6PM')){
+    } else if (Number(time[0]) >= 12 && Number(time[1]) > 0 && Number(time[2]) > 0 && Number(time[0]) < 18) {
+        if (filterTimeStoringResult.hasOwnProperty('12PM-6PM')) {
             //console.log(filterTimeStoringResult);
-           filterTimeStoringResult['12PM-6PM']['result'].push(result);
+            filterTimeStoringResult['12PM-6PM']['result'].push(result);
             filterTimeStoringResult['12PM-6PM']['price'] = Math.min(Number(filterTimeStoringResult['12PM-6PM']['price']), Number(price));
-        }else{
-            filterTimeStoringResult['12PM-6PM']={'result':[result],'price':price};
+        } else {
+            filterTimeStoringResult['12PM-6PM'] = { 'result': [result], 'price': price };
         }
-    }else{
-        if(filterTimeStoringResult.hasOwnProperty('6PM-12AM')){
+    } else {
+        if (filterTimeStoringResult.hasOwnProperty('6PM-12AM')) {
             //console.log(filterTimeStoringResult);
-           filterTimeStoringResult['6PM-12AM']['result'].push(result);
+            filterTimeStoringResult['6PM-12AM']['result'].push(result);
             filterTimeStoringResult['6PM-12AM']['price'] = Math.min(Number(filterTimeStoringResult['6PM-12AM']['price']), Number(price));
-        }else{
-            filterTimeStoringResult['6PM-12AM']={'result':[result],'price':price};
+        } else {
+            filterTimeStoringResult['6PM-12AM'] = { 'result': [result], 'price': price };
         }
     }
     return filterTimeStoringResult;
