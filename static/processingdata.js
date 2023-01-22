@@ -15,7 +15,7 @@ export async function processingData(result) {
 
             flight['price'] = Number(flightDetails[flightResultNumber]["price"]["grandTotal"]);
             flight['currency'] = flightDetails[flightResultNumber]["price"]["currency"];
-            flight['airline'] = flightDetails[flightResultNumber]['validatingAirlineCodes'];
+            flight['airline'] = flightDetails[flightResultNumber]['validatingAirlineCodes'][0];
 
 
             for (let tripNumber = 0; tripNumber < flightDetails[flightResultNumber]['itineraries'].length; tripNumber++) {
@@ -82,7 +82,7 @@ function totalduration(durationInTermsOfHoursMinutesSeconds) {
 function convertTimeSeconds(time){
     let result=0;
     time.forEach((element,index)=>{
-        result+=(Number(element)*Math.pow(60,index));
+        result+=(Number(element)*Math.pow(60,time.length-1-index));
     })
     return result;
 }

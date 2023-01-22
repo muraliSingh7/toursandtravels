@@ -84,10 +84,12 @@ addEventListener('DOMContentLoaded', (event) => {
             // sortingElement(tripType);
             // var oneWaySearchResult=await oneWaySearch(payload);
             // let finalResult=await processingData(oneWaySearchResult)
-            // console.log(finalResult)
-            let filter=new FilterCache(1);//,finalResult);
-            // let oneWay=new OneWayResult(oneWaySearchResult,payload.load0.from,payload.load0.to,0);
-            // oneWay.main();
+            // console.log(finalResult);
+            // localStorage.setItem("finalResult",JSON.stringify(finalResult));
+            // localStorage.getItem("finalResult");
+            // let filter=new FilterCache(1,JSON.parse(localStorage.getItem("finalResult"))[0]);
+            let oneWay=new OneWayResult(0,payload.load0.from,payload.load0.to,JSON.parse(localStorage.getItem("finalResult"))[0]);
+            oneWay.main();
             //flightCardCreation(oneWaySearchResult,'1',tripType);
 
         } else if (tripType == "Round-Trip") {
