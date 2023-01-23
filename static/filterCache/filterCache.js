@@ -99,10 +99,21 @@ export class FilterCache {
     }
 
 
-    async filtering(filterBy, sortBy) {
+    async filtering(filterBy) {
         let filterParameters = {};
         let sortParameters = {};
         Object.keys(filterBy).forEach((filter) => {
+            if(filter=="sort"){
+                filterBy['sort'].forEach((value)=>{
+                    sortParameters[value.slice(0,value.length)]=value.slice(value.length-1)==0?-1:1;
+                });
+            }else if(filter==""){
+
+            }else if(filter==""){
+
+            }else if(filter==""){
+
+            }
             if (filterBy[filter].length == 1) {
                 filterParameters[filter] = { $eq: filterBy[filter][0] };
             } else if (filterBy[filter].length > 1) {

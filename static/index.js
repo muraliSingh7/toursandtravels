@@ -70,7 +70,7 @@ addEventListener('DOMContentLoaded', (event) => {
             "load0":{
                 "from":'BOM',
                 "to":'BLR',
-                "departdate":'2023-01-20'
+                "departdate":'2023-01-25'
             },
             "adult":1,
             "child":1
@@ -88,7 +88,7 @@ addEventListener('DOMContentLoaded', (event) => {
             // localStorage.setItem("finalResult",JSON.stringify(finalResult));
             // localStorage.getItem("finalResult");
             // let filter=new FilterCache(1,JSON.parse(localStorage.getItem("finalResult"))[0]);
-            let oneWay=new OneWayResult(0,payload.load0.from,payload.load0.to,JSON.parse(localStorage.getItem("finalResult"))[0]);
+            let oneWay=new OneWayResult(tripType,0,payload.load0.from,payload.load0.to,JSON.parse(localStorage.getItem("finalResult"))[0]);
             oneWay.main();
             //flightCardCreation(oneWaySearchResult,'1',tripType);
 
@@ -96,9 +96,11 @@ addEventListener('DOMContentLoaded', (event) => {
             // sortingElement(tripType,payload.load0.from,payload.load0.to);
             //payload["returndate"]=document.querySelector("input.returndate").value;
             payload["returndate"]='2023-01-31';  
-            var roundTripSearchResult= processingData(await roundTripSearch(payload));
-            console.log(roundTripSearchResult);
-            let roundTrip=new RoundWayResult(roundTripSearchResult,payload.load0.from,payload.load0.to,0);
+            // var roundTripSearchResult= await processingData(await roundTripSearch(payload));
+            // console.log(roundTripSearchResult);
+            // localStorage.setItem("roundWayResult",JSON.stringify(roundTripSearchResult));
+            // localStorage.getItem("roundWayResult");
+            let roundTrip=new OneWayResult(tripType,0,payload.load0.from,payload.load0.to,JSON.parse(localStorage.getItem("roundWayResult"))[0]);
             roundTrip.main();
             
             // flightCardCreation(roundTripSearchResult,'2',tripType)
@@ -107,7 +109,7 @@ addEventListener('DOMContentLoaded', (event) => {
             payload['load1']={
                 "from":'PEK',
                 "to":'PVG',
-                "departdate":'2023-01-25',
+                "departdate":'2023-01-29',
             }
             console.log(payload);
             /*for (var i = 3; i < 5; i++) {
@@ -120,10 +122,12 @@ addEventListener('DOMContentLoaded', (event) => {
                 }
             }*/
 
-            var multiCitySearchResult=await multiCitySearch(payload);
-            console.log(multiCitySearchResult);
-            console.log(Object.keys(payload).length);
-            let multiCity=new MultiTripResult(2,payload,multiCitySearchResult);
+            // var multiCitySearchResult=await multiCitySearch(payload);
+            // console.log(multiCitySearchResult);
+            // multiCitySearchResult=await processingData(multiCitySearchResult);
+            // localStorage.setItem("multiCityResult",JSON.stringify(multiCitySearchResult));
+            // localStorage.getItem("multiCityResult");
+            let multiCity=new MultiTripResult(tripType,payload,JSON.parse(localStorage.getItem("multiCityResult")));
             //flightCardCreation(multiCitySearchResult,'1',tripType)
 
         }

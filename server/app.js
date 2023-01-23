@@ -104,8 +104,8 @@ app.get('/flights/multi-city'+URL, async (req, res) => {
   for (i = 0; i < 5; i++) {
     if (req.params['from'+i]!==undefined && req.params['to'+i]!==undefined && req.params['departdate'+i]!==undefined) {
       try {
-        response['response' + i] = await getflightoffers(req.params['from'+i], req.params['to'+i], req.params['departdate'+i],null, req.params.adult,
-          req.params.children);
+        response['response' + i] =(await getflightoffers(req.params['from'+i], req.params['to'+i], req.params['departdate'+i],null, req.params.adult,
+        req.params.children));
       } catch (responseError) {
         flag=1;
         error['error' + i] = responseError;

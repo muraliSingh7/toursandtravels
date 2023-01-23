@@ -1,8 +1,8 @@
 //import { sortByPrice, sortByTime, sortByDuration, appliedFilter } from '../../commonfunctions/sorting.js';
-import { getTripType } from '../../commonfunctions/triptype.js';
 import { FilterCache } from '../../filterCache/filterCache.js';
 export class OneWayResult {
-    constructor(tripNumber, source, destination, result) {
+    constructor(triptype, tripNumber, source, destination, result) {
+        console.log(triptype);
         this.source = source;
         this.destination = destination;
         // this.originalResult = result['response' + tripNumber];
@@ -12,11 +12,12 @@ export class OneWayResult {
         this.filter = new FilterCache(tripNumber, this.originalResult);
         this.appliedFilterResult = {};
         this.filterApplied = {};
-        this.triptype= getTripType();
+        this.triptype = triptype;
+        this.tripNumber = tripNumber;
     }
 
     async appliedFilter(tripCount) {
-        await this.filter.init(this.originalResult);
+        await this.filter.init(this.tripNumber, this.originalResult);
         let FilterElementsCreationResult = {};
         for (let tripNumber = 0; tripNumber < tripCount; tripNumber++) {
             FilterElementsCreationResult['numberOfStopsFromSourceFromTrip' + tripNumber] = await this.filter.countofNumberofStops(tripNumber);
@@ -98,15 +99,15 @@ export class OneWayResult {
                         case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', name[2], FilterElementsCreationResult[name[2]]); break;
                         case name[3]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', name[3], FilterElementsCreationResult[name[3]]); break;
                         case name[4]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', name[4], FilterElementsCreationResult[name[4]]); break;
-                        case name[4]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', name[5], FilterElementsCreationResult[name[5]]); break;
-                        case name[6]: this.airlineFilter(elementContainer, FilterElementsCreationResult[name[3]]); break;
+                        case name[5]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', name[5], FilterElementsCreationResult[name[5]]); break;
+                        case name[6]: this.airlineFilter(elementContainer, FilterElementsCreationResult[name[6]]); break;
                     }
                 } else {
                     switch (name[i]) {
                         case name[0]: this.numberOfStopsFilter(elementContainer, name[0], FilterElementsCreationResult[name[0]]); break;
                         case name[1]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', name[1], FilterElementsCreationResult[name[1]]); break;
                         case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', name[2], FilterElementsCreationResult[name[2]]); break;
-                        case name[3]: this.airlineFilter(elementContainer, name[3], FilterElementsCreationResult[name[3]]); break;
+                        case name[3]: this.airlineFilter(elementContainer, FilterElementsCreationResult[name[3]]); break;
                     }
                 }
 
@@ -133,7 +134,12 @@ export class OneWayResult {
             let labelForStop = document.createElement('label');
             labelForStop.setAttribute('for', stopNumber + ' Stop');
             labelForStop.setAttribute('class', 'titlelabel');
-            labelForStop.textContent = stopNumber + ' Stop ' + "(" + filterResult[stopNumber]['count'] + ")";
+            if (stopNumber == 0) {
+                labelForStop.textContent = "Non-Stop (" + filterResult[stopNumber]['count'] + ")";
+            } else {
+                labelForStop.textContent = stopNumber + ' Stop ' + "(" + filterResult[stopNumber]['count'] + ")";
+            }
+
 
 
             let minimumPriceForStop = document.createElement('p');
@@ -152,13 +158,18 @@ export class OneWayResult {
 
 
             individualStopContainer.addEventListener('click', () => {
-                let filterFromNumberOfStopsFromSource = {};
-                filterFromNumberOfStopsFromSource[filterName] = stopNumber;
-                if (checkBoxForStop.checked) {
-                    this.appliedFilterCommonData('filter', filterFromNumberOfStopsFromSource, true);
-                } else {
-                    this.appliedFilterCommonData('filter', filterFromNumberOfStopsFromSource, false);
+                if (!this.filterApplied.hasOwnProperty(filterName)) {
+                    this.filterApplied[filterName] = [];
                 }
+
+                if (checkBoxForStop.checked) {
+                    this.filterApplied[filterName].push(stopNumber);           
+                } else {
+                    if (this.filterApplied[filterName].length > 0 && this.filterApplied[filterName].indexOf(stopNumber) > -1) {
+                        this.filterApplied.splice(this.filterApplied[filterName].indexOf(stopNumber), 1)
+                    }
+                }
+                this.appliedFilterCommonData();
             });
 
 
@@ -211,17 +222,29 @@ export class OneWayResult {
 
 
                 timeIntervalButton.addEventListener('click', () => {
-                    let filterByTime = {};
+                    if (!this.filterApplied.hasOwnProperty(filterName)) {
+                        this.filterApplied[filterName] = [];
+                    }
+
                     filterByTime[filterName] = [time[i], time[i + 1]];
                     if (timeIntervalButton.style.backgroundColor == "transparent") {
                         timeIntervalButton.style.backgroundColor = "green";
-                        this.appliedFilterCommonData('filter', filterByTime, true);
+                        this.filterApplied[filterName].push([time[i], time[i + 1]]);
                     }
 
                     if (timeIntervalButton.style.backgroundColor == "green") {
                         timeIntervalButton.style.backgroundColor = "transparent";
-                        this.appliedFilterCommonData('filter', filterByTime, false);
+                        if (this.filterApplied[filterName].length > 0) {
+                            Array.prototype.getIndexFromNestedArray = (value) => {
+                                value = JSON.stringify(value);
+                                var arrayJSON = this.map(JSON.stringify);
+                                return arrayJSON.indexOf(value);
+                            }
+                            this.filterApplied.splice(getIndexFromNestedArray([time[i], time[i + 1]]), 1);
+                        }
                     }
+
+                    this.appliedFilterCommonData();
                 });
 
 
@@ -266,12 +289,18 @@ export class OneWayResult {
 
 
             individualAirlineContainer.addEventListener('click', () => {
-                let filterByAirline = { 'airline': airlineCode }
-                if (checkboxForAirline.checked) {
-                    this.appliedFilterCommonData('filter', filterByAirline, true);
-                } else {
-                    this.appliedFilterCommonData('filter', filterByAirline, false);
+                if (!this.filterApplied.hasOwnProperty('airline')) {
+                    this.filterApplied[filterName] = [];
                 }
+
+                if (checkboxForAirline.checked) {
+                    this.filterApplied[filterName].push(airlineCode);
+                } else {
+                    if (this.filterApplied[filterName].length > 0 && this.filterApplied[filterName].indexOf(airlineCode) > -1) {
+                        this.filterApplied.splice(this.filterApplied[filterName].indexOf(airlineCode), 1)
+                    }
+                }
+                this.appliedFilterCommonData();
             });
 
 
@@ -280,39 +309,8 @@ export class OneWayResult {
 
     }
 
-    async appliedFilterCommonData(filterOrSort, filterByOrSortBy, addOrRemove) {
-        if (addOrRemove) {
-            let keysOfFilterApplied = Object.keys(this.filterApplied);
-            Object.keys(filterBy).forEach(filter => {
-                if (!keysOfFilterApplied.includes(filter)) {
-                    this.filterApplied[filter] = [];
-                }
-                this.filterApplied[filter].push(filterBy[filter]);
-            });
-        } else {
-            Object.keys(filterBy).forEach(filter => {//accessing keys of given filter which is to be removed
-                if (keysOfFilterApplied.includes(filter)) {//checking that key inside originalfilter which is passed to database for filtering
-                    for (let currentIndex = 0; currentIndex < this.filterApplied[filter].length; i++) {//if that key is found we access each value of that particular key from original filter
-                        let value = this.filterApplied[filter][currentIndex];
-                        if (value.length == filterBy[filter].length) {
-                            //if value of originalfilter key length equals to the value of filter key 
-                            //which we want to delete we check that value length 
-                            let flagForDeleting = true;
-                            for (let i = 0; i < value.length; i++) {
-                                if (value[i] != filterBy[filter][i]) {
-                                    flagForDeleting = false;
-                                    break;
-                                }
-                            }
-                            if (flagForDeleting == true) {
-                                delete this.filterApplied[filter][currentIndex];
-                                break;
-                            }
-                        }
-                    }
-                }
-            });
-        }
+    async appliedFilterCommonData() {
+        
         let result = this.filter.filtering(this.filterApplied);
         this.display(result);
     }
@@ -356,12 +354,7 @@ export class OneWayResult {
         sortingHeaderContainer.setAttribute('class', 'sortHeaders');
 
 
-        // var sortBy = document.createElement('div');
-        // sortBy.textContent = "Sort By: ";
-        // sortBy.setAttribute('class', 'sortBy');
-        // sortingHeaderContainer.appendChild(sortBy);
-
-        var name, parameters,sortingColumnContainer;
+        var name, parameters, sortingColumnContainer;
         if (this.triptype == "Round-Trip") {
             name = ['numberOfStopsFromSourceFromTrip0', 'numberOfStopsFromSourceFromTrip1',
                 'departureFromSourceAsPerTimeFromTrip0', 'departureFromSourceAsPerTimeFromTrip1',
@@ -370,9 +363,9 @@ export class OneWayResult {
             parameters = ['Sort By: ', `Departure_Time_From_${this.source}`, `Arrival_Time_To_${this.destination}`,
                 `Duration_From_${this.source}`, `Departure_Time_From_${this.destination}`, `Arrival_Time_To_${this.source}`,
                 `Duration_From_${this.destination}`, 'Price'];
-            
+
             sortingColumnContainer = document.createElement('div');
-            sortingColumnContainer.setAttribute('class','sortingColumnContainer');
+            sortingColumnContainer.setAttribute('class', 'sortingColumnContainer');
 
         } else {
             name = ['numberOfStopsFromSourceFromTrip0', 'departureFromSourceAsPerTimeFromTrip0',
@@ -416,29 +409,45 @@ export class OneWayResult {
                             } else if (down !== null) {
                                 down.remove();
                             }
-                            element.style.color = "black";
-                            element.style.fontSize = "20px";
-                            element.style.fontWeight = "normal";
+                            if (this.triptype == "Round-Trip" && paramElement.classList.contains('roundWayIndividualSortELementAfterClicked')) {
+                                paramElement.classList.add('roundWayIndividualSortELement');
+                            } else if (this.triptype != "Round-Trip" && paramElement.classList.contains('individualSortELementAfterClicked')) {
+                                paramElement.classList.add('individualSortELement');
+                            }
                         }
                     });
 
+                    if (!this.filterApplied.hasOwnProperty('sort')) {
+                        this.filterApplied['sort'] = [];
+                    }
 
                     if (arrowState == "up") {
-                        this.appliedFilterCommonData('sort', name[i], true);
+                        if (this.filterApplied['sort'].length > 0 && this.filterApplied['sort'].indexOf(name[i]+1) > -1) {
+                            this.filterApplied['sort'].splice(this.filterApplied['sort'].indexOf(name[i]+1), 1);
+                        }
+                        this.filterApplied['sort'].push(name[i]+0);//0 for descending
                         paramElement.appendChild(downarrow);
                     } else {
-                        this.appliedFilterCommonData('sort', name[i], false);
+                        if (this.filterApplied['sort'].length > 0 && this.filterApplied['sort'].indexOf(name[i]+0) > -1) {
+                            this.filterApplied['sort'].splice(this.filterApplied['sort'].indexOf(name[i]+0), 1);
+                        }
+                        this.filterApplied['sort'].push(name[i]+1);//1 for ascending
                         paramElement.appendChild(uparrow);
                     }
 
-                    paramElement.style.fontWeight = "bold";
-                    paramElement.style.color = "#023047";
-                    paramElement.style.fontSize = "25px";
+
+                    if (this.triptype == "Round-Trip" && paramElement.classList.contains('roundWayIndividualSortELement')) {
+                        paramElement.classList.add('roundWayIndividualSortELementAfterClicked');
+                    } else if (this.triptype != "Round-Trip" && paramElement.classList.contains('individualSortELement')) {
+                        paramElement.classList.add('individualSortELementAfterClicked');
+                    }
+
+                    this.appliedFilterCommonData();
                 });
             }
 
 
-            if(this.triptype== "Round-Trip"){
+            if (this.triptype == "Round-Trip") {
                 if (nameOfElement == "Price" || nameOfElement == "Sort By: ") {
                     paramElement.setAttribute('class', 'roundWayPrice');
                 } else {
@@ -453,14 +462,14 @@ export class OneWayResult {
                 } else {
                     sortingColumnContainer.appendChild(paramElement);
                 }
-            }else{
-                if(nameOfElement=="Sort By:"){
+            } else {
+                if (nameOfElement == "Sort By:") {
                     paramElement.setAttribute('class', 'sortBy');
-                }else{
+                } else {
                     paramElement.setAttribute('class', 'individualSortELement');
                 }
                 sortingHeaderContainer.appendChild(paramElement);
-            } 
+            }
         }
         document.querySelector('[name=sortPanel]').appendChild(sortingHeaderContainer);
 
@@ -508,6 +517,11 @@ export class OneWayResult {
     main() {
         this.flightResultColumnCreation();
         this.filterViewCreation(this.source, this.destination, this.originalResult);
-        this.display(this.displayData, 1);
+        if (this.triptype == "Round-Trip") {
+            this.display(this.displayData, 2);
+        } else {
+            this.display(this.displayData, 1);
+        }
+
     }
 }
