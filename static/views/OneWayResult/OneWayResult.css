@@ -5,6 +5,9 @@
     justify-content: flex-start;
     align-items: stretch;
     row-gap: 5px;
+    border-style: solid;
+    border-color: green;
+    margin-top:5px;
 
 }
 
@@ -24,10 +27,10 @@
     justify-content: flex-start;
     align-items: stretch;
     margin: 10px 10px;
-    height:1000px;
+    height: 1000px;
 }
 
-.resultPanel{
+.resultPanel {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -36,10 +39,10 @@
     margin: 10px 10px;
     overflow-y: auto;
     -ms-overflow-style: none;
-    scrollbar-width: none; 
+    scrollbar-width: none;
 }
 
-.resultPanel::-webkit-scrollbar{
+.resultPanel::-webkit-scrollbar {
     display: none;
 }
 
@@ -47,7 +50,7 @@
 
 .container {
     margin: 10px 10px;
-    padding-right:20px;
+    padding-right: 20px;
     border-style: solid;
     border-width: 2px;
     border-radius: 20px;
@@ -55,9 +58,9 @@
 }
 
 
-.checkBoxAndLabelCombinedContainer{
+.checkBoxAndLabelCombinedContainer {
     display: inline-flex;
-    margin:0px;
+    margin: 0px;
 }
 
 .title {
@@ -66,13 +69,24 @@
     font-family: 'Lato', sans-serif;
 }
 
-.timeIntervalButton {
+.timeIntervalButtonBeforeClicked {
     display: inline-block;
     margin: 5px 0px 15px 20px;
     border-style: solid;
     border-width: 2px;
     border-radius: 10px;
     border-color: grey;
+    background-color: white;
+}
+
+.timeIntervalButtonAfterClicked {
+    display: inline-block;
+    margin: 5px 0px 15px 20px;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: green;
+    background-color: green;
 }
 
 .timeIntervalTitle {
@@ -94,20 +108,20 @@
 }
 
 .subContainer {
-    margin:5px 0px 5px 20px;
-    display:flex;
+    margin: 5px 0px 5px 20px;
+    display: flex;
     justify-content: space-between;
 }
 
 .titlelabel {
-    float:left;
+    float: left;
 }
 
 .price {
     text-align: right;
     display: inline;
     margin: 0px;
-    
+
 }
 
 .sortHeaders {
@@ -116,7 +130,6 @@
     margin: 10px 20px;
     padding: 10px 10px;
     background-color: lightgrey;
-    width: 800px;
 }
 
 .sortBy {
@@ -131,46 +144,83 @@
     width: 100px;
     text-align: center;
     font-weight: normal;
-    color:black;
+    color: black;
 }
 
-.individualSortELementAfterClicked{
+.individualSortELementAfterClicked {
     font-size: 25px;
     margin: auto;
     width: 100px;
     text-align: center;
     color: #023047;
-    font-weight:bold;
+    font-weight: bold;
 }
 
-.sortingColumnContainer{
-    display:flex;
-    flex-wrap:wrap;
-    flex-grow:2;
-    align-items:center;
-    justify-content:space-between;
-    align-items:center;
-}
-.roundWayPrice{
-    flex-grow:1;
-    align-self:center;
-    color:black;
-    font-size:20px;
+.sortingColumnContainer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-grow: 2;
+    align-items: center;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.roundWayIndividualSortELement{
+.roundWayPrice {
+    flex-grow: 1;
+    align-self: center;
+    color: black;
+    font-size: 20px;
+}
+
+.roundWayIndividualSortELement {
     flex: 1 1 30%;
-    color:black;
-    font-size:20px;
+    color: black;
+    font-size: 20px;
     text-align: center;
     font-weight: normal;
 }
 
-.roundWayIndividualSortELementAfterClicked{
+.roundWayIndividualSortELementAfterClicked {
     flex: 1 1 30%;
-    color:black;
-    font-size:25px;
+    color: black;
+    font-size: 25px;
     text-align: center;
     color: #023047;
-    font-weight:bold;
+    font-weight: bold;
+}
+
+.tripTitle {
+    border-style:solid;
+    border-color: red;
+    margin-top: 5px;
+}
+
+.tripDescription {
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0px 10px 0px;
+}
+
+.prevButtonTripDescription {
+    font-size: 25px;
+    margin-right: 5px;
+}
+
+.tripSource {
+    margin-right: 5px;
+}
+
+.tripDestination {
+    margin-right: 5px;
+}
+
+
+.rightArrowTripDescription {
+    font-size: 25px;
+    margin-right: 5px;
+}
+
+.nextButtonTripDescription {
+    font-size: 25px;
 }

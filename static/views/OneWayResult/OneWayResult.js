@@ -5,8 +5,6 @@ export class OneWayResult {
         console.log(triptype);
         this.source = source;
         this.destination = destination;
-        // this.originalResult = result['response' + tripNumber];
-        // this.displayData = result['response' + tripNumber].slice(0, 50);
         this.originalResult = result;
         this.displayData = result.slice(0, 50);
         this.filter = new FilterCache(tripNumber, this.originalResult);
@@ -14,6 +12,7 @@ export class OneWayResult {
         this.filterApplied = {};
         this.triptype = triptype;
         this.tripNumber = tripNumber;
+        this.sortDirection = this.triptype == "Round-Trip" ? new Array(8).fill(-1) : new Array(5).fill(-1);
     }
 
     async appliedFilter(tripCount) {
@@ -31,7 +30,7 @@ export class OneWayResult {
         }
 
 
-        FilterElementsCreationResult['airline'] = await this.filter.getUniqueAirline(0);
+        FilterElementsCreationResult['airline'] = await this.filter.getUniqueAirline();
         console.log(FilterElementsCreationResult);
         return FilterElementsCreationResult;
     }
@@ -96,17 +95,17 @@ export class OneWayResult {
                     switch (name[i]) {
                         case name[0]: this.numberOfStopsFilter(elementContainer, name[0], FilterElementsCreationResult[name[0]]); break;
                         case name[1]: this.numberOfStopsFilter(elementContainer, name[1], FilterElementsCreationResult[name[1]]); break;
-                        case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', name[2], FilterElementsCreationResult[name[2]]); break;
-                        case name[3]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', name[3], FilterElementsCreationResult[name[3]]); break;
-                        case name[4]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', name[4], FilterElementsCreationResult[name[4]]); break;
-                        case name[5]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', name[5], FilterElementsCreationResult[name[5]]); break;
+                        case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', 0, name[2], FilterElementsCreationResult[name[2]]); break;
+                        case name[3]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', 1, name[3], FilterElementsCreationResult[name[3]]); break;
+                        case name[4]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', 0, name[4], FilterElementsCreationResult[name[4]]); break;
+                        case name[5]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', 1, name[5], FilterElementsCreationResult[name[5]]); break;
                         case name[6]: this.airlineFilter(elementContainer, FilterElementsCreationResult[name[6]]); break;
                     }
                 } else {
                     switch (name[i]) {
                         case name[0]: this.numberOfStopsFilter(elementContainer, name[0], FilterElementsCreationResult[name[0]]); break;
-                        case name[1]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', name[1], FilterElementsCreationResult[name[1]]); break;
-                        case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', name[2], FilterElementsCreationResult[name[2]]); break;
+                        case name[1]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'departure', 0, name[1], FilterElementsCreationResult[name[1]]); break;
+                        case name[2]: this.creatingButtonsAsPerTimeRangeFilter(elementContainer, 'arrival', 0, name[2], FilterElementsCreationResult[name[2]]); break;
                         case name[3]: this.airlineFilter(elementContainer, FilterElementsCreationResult[name[3]]); break;
                     }
                 }
@@ -158,15 +157,16 @@ export class OneWayResult {
 
 
             individualStopContainer.addEventListener('click', () => {
+                stopNumber = Number(stopNumber);
                 if (!this.filterApplied.hasOwnProperty(filterName)) {
                     this.filterApplied[filterName] = [];
                 }
 
                 if (checkBoxForStop.checked) {
-                    this.filterApplied[filterName].push(stopNumber);           
+                    this.filterApplied[filterName].push(stopNumber);
                 } else {
                     if (this.filterApplied[filterName].length > 0 && this.filterApplied[filterName].indexOf(stopNumber) > -1) {
-                        this.filterApplied.splice(this.filterApplied[filterName].indexOf(stopNumber), 1)
+                        this.filterApplied[filterName].splice(this.filterApplied[filterName].indexOf(stopNumber), 1)
                     }
                 }
                 this.appliedFilterCommonData();
@@ -178,7 +178,7 @@ export class OneWayResult {
     }
 
 
-    creatingButtonsAsPerTimeRangeFilter(parentElement, departureOrArrival, filterName, resultAsPerTimeRange) {
+    creatingButtonsAsPerTimeRangeFilter(parentElement, departureOrArrival, tripNumber, filterName, resultAsPerTimeRange) {
         var timing = ['0AM-6AM', '6AM-12PM', '12PM-6PM', '6PM-12AM'];
         var timeHeader = ['Before 6AM', '6AM-12PM', '12PM-6PM', 'After 6PM']
         var time = [0, 21600, 43200, 64800, 86400];
@@ -192,7 +192,7 @@ export class OneWayResult {
         for (let i = 0; i < timing.length; i++) {
             if (resultAsPerTimeRange[time[i] + "_" + time[i + 1]]) {
                 let timeIntervalButton = document.createElement('div');
-                timeIntervalButton.setAttribute('class', 'timeIntervalButton');
+                timeIntervalButton.setAttribute('class', 'timeIntervalButtonBeforeClicked');
 
 
                 if (departureOrArrival == 'departure') {
@@ -222,28 +222,43 @@ export class OneWayResult {
 
 
                 timeIntervalButton.addEventListener('click', () => {
-                    if (!this.filterApplied.hasOwnProperty(filterName)) {
-                        this.filterApplied[filterName] = [];
+                    if (!this.filterApplied.hasOwnProperty(departureOrArrival + tripNumber)) {
+                        this.filterApplied[departureOrArrival + tripNumber] = [];
                     }
 
-                    filterByTime[filterName] = [time[i], time[i + 1]];
-                    if (timeIntervalButton.style.backgroundColor == "transparent") {
-                        timeIntervalButton.style.backgroundColor = "green";
-                        this.filterApplied[filterName].push([time[i], time[i + 1]]);
-                    }
-
-                    if (timeIntervalButton.style.backgroundColor == "green") {
-                        timeIntervalButton.style.backgroundColor = "transparent";
-                        if (this.filterApplied[filterName].length > 0) {
-                            Array.prototype.getIndexFromNestedArray = (value) => {
-                                value = JSON.stringify(value);
-                                var arrayJSON = this.map(JSON.stringify);
-                                return arrayJSON.indexOf(value);
+                    if (timeIntervalButton.classList.contains('timeIntervalButtonBeforeClicked')) {
+                        timeIntervalButton.classList.remove('timeIntervalButtonBeforeClicked');
+                        timeIntervalButton.classList.add('timeIntervalButtonAfterClicked');
+                        this.filterApplied[departureOrArrival + tripNumber].push([time[i], time[i + 1]]);
+                        console.log(this.filterApplied);
+                    } else if (timeIntervalButton.classList.contains('timeIntervalButtonAfterClicked')) {
+                        timeIntervalButton.classList.remove('timeIntervalButtonAfterClicked');
+                        timeIntervalButton.classList.add('timeIntervalButtonBeforeClicked');
+                        if (this.filterApplied[departureOrArrival + tripNumber].length > 0) {
+                            // function getIndexFromNestedArray(arr, value) {
+                            //     for (let i = 0; i < arr.length; i++) {
+                            //         if (arr[i][0] == value[0] && arr[i][1] == value[1]) {
+                            //             return i;
+                            //         }
+                            //     }
+                            //     return -1;
+                            // }
+                            function getIndexFromNestedArray(arr, value) {
+                                // return arr.reduce((index)=>{
+                                //     return arr[index][0]==value[0] && arr[index][1]==value[1] ?index:-1;
+                                // })
+                                return (arr.map((item) => {
+                                    return item[0] == value[0] && item[1] == value[1];
+                                })).indexOf(true);
                             }
-                            this.filterApplied.splice(getIndexFromNestedArray([time[i], time[i + 1]]), 1);
+                            let index = getIndexFromNestedArray(this.filterApplied[departureOrArrival + tripNumber], [time[i], time[i + 1]]);
+                            if (index > -1) {
+                                this.filterApplied[departureOrArrival + tripNumber].splice(index, 1);
+                            }
+
+                            console.log(this.filterApplied);
                         }
                     }
-
                     this.appliedFilterCommonData();
                 });
 
@@ -290,14 +305,14 @@ export class OneWayResult {
 
             individualAirlineContainer.addEventListener('click', () => {
                 if (!this.filterApplied.hasOwnProperty('airline')) {
-                    this.filterApplied[filterName] = [];
+                    this.filterApplied['airline'] = [];
                 }
 
                 if (checkboxForAirline.checked) {
-                    this.filterApplied[filterName].push(airlineCode);
+                    this.filterApplied['airline'].push(airlineCode);
                 } else {
-                    if (this.filterApplied[filterName].length > 0 && this.filterApplied[filterName].indexOf(airlineCode) > -1) {
-                        this.filterApplied.splice(this.filterApplied[filterName].indexOf(airlineCode), 1)
+                    if (this.filterApplied['airline'].length > 0 && this.filterApplied['airline'].indexOf(airlineCode) > -1) {
+                        this.filterApplied['airline'].splice(this.filterApplied['airline'].indexOf(airlineCode), 1)
                     }
                 }
                 this.appliedFilterCommonData();
@@ -310,9 +325,13 @@ export class OneWayResult {
     }
 
     async appliedFilterCommonData() {
-        
-        let result = this.filter.filtering(this.filterApplied);
-        this.display(result);
+        let result = await this.filter.filtering(this.filterApplied);
+        console.log(result);
+        if (this.triptype == "Round-Trip") {
+            this.display(result, 2);
+        } else {
+            this.display(result, 1);
+        }
     }
 
 
@@ -356,8 +375,8 @@ export class OneWayResult {
 
         var name, parameters, sortingColumnContainer;
         if (this.triptype == "Round-Trip") {
-            name = ['numberOfStopsFromSourceFromTrip0', 'numberOfStopsFromSourceFromTrip1',
-                'departureFromSourceAsPerTimeFromTrip0', 'departureFromSourceAsPerTimeFromTrip1',
+            name = ['Sort By: ', 'departureFromSourceAsPerTimeFromTrip0', 'departureFromSourceAsPerTimeFromTrip1',
+                'durationFromTrip0', 'durationFromTrip1',
                 'arrivalAtDestinationAsPerTimeFromTrip0', 'arrivalAtDestinationAsPerTimeFromTrip1',
                 'price'];
             parameters = ['Sort By: ', `Departure_Time_From_${this.source}`, `Arrival_Time_To_${this.destination}`,
@@ -368,16 +387,11 @@ export class OneWayResult {
             sortingColumnContainer.setAttribute('class', 'sortingColumnContainer');
 
         } else {
-            name = ['numberOfStopsFromSourceFromTrip0', 'departureFromSourceAsPerTimeFromTrip0',
+            name = ['Sort By: ', 'departureFromSourceAsPerTimeFromTrip0', 'durationFromTrip0',
                 'arrivalAtDestinationAsPerTimeFromTrip0', 'price'];
             parameters = ['Sort By: ', 'Departure', 'Duration', 'Arrival', 'Price'];
         }
 
-
-        var uparrow = document.createElement('i');
-        uparrow.setAttribute('class', 'fa fa-arrow-up');
-        var downarrow = document.createElement('i');
-        downarrow.setAttribute('class', 'fa fa-arrow-down');
 
 
         for (let i = 0; i < parameters.length; i++) {
@@ -385,35 +399,29 @@ export class OneWayResult {
             const paramElement = document.createElement('div');
             paramElement.setAttribute('name', nameOfElement);
             paramElement.textContent = nameOfElement.replaceAll('_', ' ');
-
+            if (this.sortDirection[i] == 1) {
+                paramElement.textContent = paramElement.textContent + "↑";
+            } else if (this.sortDirection[i] == 0) {
+                paramElement.textContent = paramElement.textContent + "↓";
+            }
 
 
             if (parameters[i] !== "Sort By: ") {
                 paramElement.addEventListener('click', () => {
+                    let direction = this.sortDirection[i];
 
-                    var arrowState;
-                    if (paramElement.contains(uparrow)) {
-                        arrowState = "up";
-                    } else if (paramElement.contains(downarrow)) {
-                        arrowState = "down";
-                    }
-
-
-                    parameters.forEach((elementName) => {
+                    parameters.forEach((elementName, index) => {
                         if (elementName != "Sort By: ") {
                             let element = document.querySelector(`[name=${elementName}]`);
-                            let up = element.querySelector('i.fa.fa-arrow-up');
-                            let down = element.querySelector('i.fa.fa-arrow-down');
-                            if (up !== null) {
-                                up.remove();
-                            } else if (down !== null) {
-                                down.remove();
+                            if (element.textContent.includes("↑") || element.textContent.includes("↓")) {
+                                element.textContent = element.textContent.slice(0, element.length - 1);
                             }
-                            if (this.triptype == "Round-Trip" && paramElement.classList.contains('roundWayIndividualSortELementAfterClicked')) {
-                                paramElement.classList.add('roundWayIndividualSortELement');
-                            } else if (this.triptype != "Round-Trip" && paramElement.classList.contains('individualSortELementAfterClicked')) {
-                                paramElement.classList.add('individualSortELement');
+                            if (this.triptype == "Round-Trip" && element.classList.contains('roundWayIndividualSortELementAfterClicked')) {
+                                element.classList.add('roundWayIndividualSortELement');
+                            } else if (this.triptype != "Round-Trip" && element.classList.contains('individualSortELementAfterClicked')) {
+                                element.classList.add('individualSortELement');
                             }
+                            this.sortDirection[index] = -1;
                         }
                     });
 
@@ -421,18 +429,16 @@ export class OneWayResult {
                         this.filterApplied['sort'] = [];
                     }
 
-                    if (arrowState == "up") {
-                        if (this.filterApplied['sort'].length > 0 && this.filterApplied['sort'].indexOf(name[i]+1) > -1) {
-                            this.filterApplied['sort'].splice(this.filterApplied['sort'].indexOf(name[i]+1), 1);
-                        }
-                        this.filterApplied['sort'].push(name[i]+0);//0 for descending
-                        paramElement.appendChild(downarrow);
+                    if (direction == 1) {
+                        1// for ascending
+                        this.filterApplied['sort'] = [];
+                        this.sortDirection[i] = 0;
+                        this.filterApplied['sort'].push(name[i] + 0);//0 for descending
                     } else {
-                        if (this.filterApplied['sort'].length > 0 && this.filterApplied['sort'].indexOf(name[i]+0) > -1) {
-                            this.filterApplied['sort'].splice(this.filterApplied['sort'].indexOf(name[i]+0), 1);
-                        }
-                        this.filterApplied['sort'].push(name[i]+1);//1 for ascending
-                        paramElement.appendChild(uparrow);
+                        this.filterApplied['sort'] = [];
+                        this.sortDirection[i] = 1;
+                        this.filterApplied['sort'].push(name[i] + 1);//1 for ascending
+
                     }
 
 
@@ -441,6 +447,8 @@ export class OneWayResult {
                     } else if (this.triptype != "Round-Trip" && paramElement.classList.contains('individualSortELement')) {
                         paramElement.classList.add('individualSortELementAfterClicked');
                     }
+
+                    console.log(this.filterApplied);
 
                     this.appliedFilterCommonData();
                 });

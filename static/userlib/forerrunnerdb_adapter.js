@@ -42,6 +42,7 @@ export class DB {
     }
 
     async find(parameter){
-        return await this.collection.find(parameter);
+        return await this.collection.find(parameter).sort(parameter['$orderBy']);
     }
+
 }
