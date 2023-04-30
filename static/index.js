@@ -8,13 +8,6 @@ import {OneWayResult} from './views/OneWayResult/OneWayResult.js'
 import {RoundWayResult} from './views/RoundWayResult.js'
 import {MultiTripResult} from './views/MultiTripResult.js'
 
-async function AirportSearch(query){
-    console.log(query);
-    var response=await fetch(`http://127.0.0.1:3000/airportsearch/${query}`)
-    var data=await response.json(); 
-    data=data.data;
-    return data;
-}
 
 
 
@@ -55,6 +48,25 @@ addEventListener('DOMContentLoaded', (event) => {
             AirportSearch(fromtodepart.shadowRoot.querySelector("input.to").value);
         }
     }*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     var form = document.querySelector("#flight-search");
     form.addEventListener("submit", async function (event) {
@@ -135,27 +147,3 @@ addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-function DropDownMenuIataCode(query,value,data){
-    data=data.filter((element)=>{
-        return element.detailedName.toLowerCase().startsWith(value.toLowerCase());
-    });
-    data.sort(function(a,b){
-        return a.iataCode<b.iataCode?-1:1;
-    });
-    if(Object.keys(data).length>=5){
-        data=data.slice(0,5);
-    }
-    
-    console.log(data.slice(0,Object.keys(data).length));
-    query.addEventListener("input",function(e){
-        var length_of_data=Object.keys(data).length;
-        for(var i=0;i<length_of_data;i++){
-            //data.iata
-        }
-    })
-    /*for(i=0;i<data.length;i++){
-        var newelement=document.createElement("div");
-
-
-    }*/
-}
