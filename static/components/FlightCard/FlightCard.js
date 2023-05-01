@@ -45,13 +45,18 @@ class FlightCard extends HTMLElement {
         this.tripcount = tripcount;
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.appendChild(FlightCardTemplate.content.cloneNode(true));
+       
         //console.log(this.shadowRoot);
         //console.log(tripcount);
+       
         while (tripcount != 0) {
+
             //console.log(this.shadowRoot.querySelector('header[name=carrier-name]'))
             this.shadowRoot.querySelector('td[name=flight]').innerHTML+=oneTripDetailTemplate.innerHTML;
             tripcount--;
+
         }
+
         //console.log(this.shadowRoot);
     }
     connectedCallBack() {

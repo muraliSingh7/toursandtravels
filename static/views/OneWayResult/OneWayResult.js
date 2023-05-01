@@ -19,18 +19,18 @@ export class OneWayResult {
         await this.filter.init(this.tripNumber, this.originalResult);
         let FilterElementsCreationResult = {};
         for (let tripNumber = 0; tripNumber < tripCount; tripNumber++) {
-            FilterElementsCreationResult['numberOfStopsFromSourceFromTrip' + tripNumber] = await this.filter.countofNumberofStops(tripNumber);
+            FilterElementsCreationResult['numberOfStopsFromSourceFromTrip' + tripNumber] = await this.filter.getFlightCountAndMinimumPriceByStoppages(tripNumber);
             FilterElementsCreationResult['arrivalAtDestinationAsPerTimeFromTrip' + tripNumber] = {};
             FilterElementsCreationResult['departureFromSourceAsPerTimeFromTrip' + tripNumber] = {};
             var time = [0, 21600, 43200, 64800, 86400];
             for (let i = 0; i < time.length - 1; i++) {
-                FilterElementsCreationResult['departureFromSourceAsPerTimeFromTrip' + tripNumber][time[i] + "_" + time[i + 1]] = await this.filter.getPriceAsPerTime(tripNumber, "departure", time[i], time[i + 1]);
-                FilterElementsCreationResult['arrivalAtDestinationAsPerTimeFromTrip' + tripNumber][time[i] + "_" + time[i + 1]] = await this.filter.getPriceAsPerTime(tripNumber, "arrival", time[i], time[i + 1]);
+                FilterElementsCreationResult['departureFromSourceAsPerTimeFromTrip' + tripNumber][time[i] + "_" + time[i + 1]] = await this.filter.getMinimumPriceOfFlightAsPerTime(tripNumber, "departure", time[i], time[i + 1]);
+                FilterElementsCreationResult['arrivalAtDestinationAsPerTimeFromTrip' + tripNumber][time[i] + "_" + time[i + 1]] = await this.filter.getMinimumPriceOfFlightAsPerTime(tripNumber, "arrival", time[i], time[i + 1]);
             }
         }
 
 
-        FilterElementsCreationResult['airline'] = await this.filter.getUniqueAirline();
+        FilterElementsCreationResult['airline'] = await this.filter.getFlightStatisticsByAirlines();
         console.log(FilterElementsCreationResult);
         return FilterElementsCreationResult;
     }
@@ -134,9 +134,9 @@ export class OneWayResult {
             labelForStop.setAttribute('for', stopNumber + ' Stop');
             labelForStop.setAttribute('class', 'titlelabel');
             if (stopNumber == 0) {
-                labelForStop.textContent = "Non-Stop (" + filterResult[stopNumber]['count'] + ")";
+                labelForStop.textContent = "Non-Stop (" + filterResult[stopNumber]['numberOfFlights'] + ")";
             } else {
-                labelForStop.textContent = stopNumber + ' Stop ' + "(" + filterResult[stopNumber]['count'] + ")";
+                labelForStop.textContent = stopNumber + ' Stop ' + "(" + filterResult[stopNumber]['numberOfFlights'] + ")";
             }
 
 
@@ -287,7 +287,7 @@ export class OneWayResult {
             labelForAirline.setAttribute('for', airlineCode);
             labelForAirline.setAttribute('class', 'titlelabel');
             individualAirlineContainer.appendChild(checkboxForAirline);
-            labelForAirline.textContent = airlineCode + "(" + filterResult[airlineCode]['count'] + ")";
+            labelForAirline.textContent = airlineCode + "(" + filterResult[airlineCode]['numberOfFlights'] + ")";
 
 
             let airlineMinimumPrice = document.createElement('p');

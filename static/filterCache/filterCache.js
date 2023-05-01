@@ -1,10 +1,13 @@
 import { getTripType } from "../commonfunctions/triptype.js";
 import { DB } from "../userlib/forerrunnerdb_adapter.js";
 export class FilterCache {
+   
     constructor(tripNumber, results) {//tripCount,results
         results = (results || []);
         this.init(tripNumber, results)//tripCount,results
     }
+
+
 
     async init(tripNumber, results) {//tripCount,results
         this.databaseForTrip = new DB("Trip" + tripNumber);
@@ -13,14 +16,17 @@ export class FilterCache {
         await this.databaseForTrip.insert(results);
     }
 
-    async countofNumberofStops(tripNumber) {
-        let countResult = {};
+
+
+    async getFlightCountAndMinimumPriceByStoppages(tripNumber) {
+
+        let stoppageDetails = {};
         let filterParameters = [{}, {}];
         filterParameters[0]['numberOfStopsFromSourceFromTrip' + tripNumber] = { $gte: 0 }
         filterParameters[1]['price'] = { $gt: 0 };
-
         let sortParameters = {};
         sortParameters['numberOfStopsFromSourceFromTrip' + tripNumber] = 1;
+
 
         let result = await this.databaseForTrip.find({ $and: filterParameters }, { $orderBy: sortParameters });
         console.log(result);
@@ -28,74 +34,98 @@ export class FilterCache {
         //     console.log(data);
         // })
 
+
         if (result.length > 1) {
-            let min = result[0]['numberOfStopsFromSourceFromTrip' + tripNumber];
-            let max = result[result.length - 1]['numberOfStopsFromSourceFromTrip' + tripNumber];
+            let minimumStoppages = result[0]['numberOfStopsFromSourceFromTrip' + tripNumber];
+            let maximumStoppages = result[result.length - 1]['numberOfStopsFromSourceFromTrip' + tripNumber];
             // console.log(min+" "+max);
-            for (let i = min; i <= max; i++) {
+        
+            for (let i = minimumStoppages; i <= maximumStoppages; i++) {
+            
                 filterParameters[0]['numberOfStopsFromSourceFromTrip' + tripNumber] = { $eq: i };
                 sortParameters['price'] = 1;
+
                 let filterResult = await this.databaseForTrip.find({ $and: filterParameters }, { $orderBy: sortParameters });
-                console.log(filterResult);
-                countResult[i] = { 'count': filterResult.length - 1, 'minimumPrice': filterResult[0]['price'] }
+                // console.log(filterResult);
+                
+                stoppageDetails[i] = { 'numberOfFlights': filterResult.length - 1, 'minimumPrice': filterResult[0]['price'] }
+
             }
+
         }
 
 
-        console.log(countResult);
-        return countResult;
+        console.log(stoppageDetails);
+        return stoppageDetails;
+
     }
 
-    async getPriceAsPerTime(tripNumber, arrivalOrDestination, minTime, maxTime) {
+
+
+    async getMinimumPriceOfFlightAsPerTime(tripNumber, arrivalOrDestination, minimumTimeInSeconds, maximumTimeInSeconds) {
+     
         let filterParameters = [{}, {}];
         let sortParameters = {};
 
         if (arrivalOrDestination == "arrival") {
-            filterParameters[0]['arrivalAtDestinationAsPerTimeInSecondsFromTrip' + tripNumber] = { $gte: minTime, $lt: maxTime };
+            filterParameters[0]['arrivalAtDestinationAsPerTimeInSecondsFromTrip' + tripNumber] = { $gte: minimumTimeInSeconds, $lt: maximumTimeInSeconds };
             sortParameters['arrivalAtDestinationAsPerTimeInSecondsFromTrip' + tripNumber] = 1;
+        
         } else {
-            filterParameters[0]['departureFromSourceAsPerTimeInSecondsFromTrip' + tripNumber] = { $gte: minTime, $lt: maxTime };
+            filterParameters[0]['departureFromSourceAsPerTimeInSecondsFromTrip' + tripNumber] = { $gte: minimumTimeInSeconds, $lt: maximumTimeInSeconds };
             sortParameters['departureFromSourceAsPerTimeInSecondsFromTrip' + tripNumber] = 1;
+     
         }
+
+
         filterParameters[1]['price'] = { $gt: 0 };
         sortParameters['price'] = 1;
+        // console.log({ $and: filterParameters }, { $orderBy: sortParameters });
+        
+        
+        let flightsSortedByPrice = await this.databaseForTrip.find({ $and: filterParameters }, { $orderBy: sortParameters });
+        // console.log(result);
 
-        console.log({ $and: filterParameters }, { $orderBy: sortParameters });
-        let result = await this.databaseForTrip.find({ $and: filterParameters }, { $orderBy: sortParameters });
-        console.log(result);
 
+        if (flightsSortedByPrice.length > 0) {
+            // console.log(result[0]['price']);
+            return flightsSortedByPrice[0]['price'];
 
-        if (result.length > 0) {
-            console.log(result[0]['price']);
-            return result[0]['price'];
         } else {
-            console.log(0);
+            // console.log(0);
             return 0;
+
         }
 
     }
 
-    async getUniqueAirline() {
-        let countResult = {}
-        let uniqueAirline = await this.databaseForTrip.find({ $distinct: { 'airline': 1 } });
-        console.log(uniqueAirline);
 
 
-        uniqueAirline.forEach(async (data) => {
-            console.log(data.airline);
-            let filterParameters = [{ 'airline': { $eq: data.airline } }, { 'price': { $gt: 0 } }];
+    async getFlightStatisticsByAirlines() {
+        let airlineStats = {}
+        let uniqueAirlines = await this.databaseForTrip.find({ $distinct: { 'airline': 1 } });
+        // console.log(uniqueAirlines);
+
+
+        uniqueAirlines.forEach(async (airlineInformation) => {
+
+            // console.log(data.airline);
+            let filterParameters = [{ 'airline': { $eq: airlineInformation.airline } }, { 'price': { $gt: 0 } }];
             let sortParameters = { 'airline': 1, 'price': 1 };
-            let result = await this.databaseForTrip.find({ $and: filterParameters }, { $orderBy: sortParameters });
-            console.log({ $and: filterParameters }, { $orderBy: sortParameters });
-            console.log(result);
-            if (result.length > 0) {
-                countResult[data.airline] = { 'count': result.length, 'minimumPrice': result[0].price };
+            
+            let flightsSortedByPriceForAirline = await this.databaseForTrip.find({ $and: filterParameters }, { $orderBy: sortParameters });
+            // console.log({ $and: filterParameters }, { $orderBy: sortParameters });
+            // console.log(result);
+            
+            if (flightsSortedByPriceForAirline.length > 0) {
+                airlineStats[airlineInformation.airline] = { 'numberOfFlights': flightsSortedByPriceForAirline.length, 'minimumPrice': flightsSortedByPriceForAirline[0].price };
             }
-        })
+        
+        });
 
 
-        console.log(countResult);
-        return countResult;
+        // console.log(airlineStats);
+        return airlineStats;
     }
 
 
@@ -143,8 +173,10 @@ export class FilterCache {
                     if (filterBy[filter].length == 1) {
                         if (filter.includes("departure")) {
                             obj["departureFromSourceAsPerTimeInSecondsFromTrip" + filter.substring(filter.length - 1)] = { $gte: filterBy[filter][0][0], $lt: filterBy[filter][0][1] }
+
                         } else {
                             obj["arrivalAtDestinationAsPerTimeInSecondsFromTrip" + filter.substring(filter.length - 1)] = { $gte: filterBy[filter][0][0], $lt: filterBy[filter][0][1] }
+                            
                         }
                     } else {
                         let values = [];
