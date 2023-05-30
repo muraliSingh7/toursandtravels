@@ -59,6 +59,7 @@ app.get('/airportsearch/:airportname?',(req,res)=>{
     //console.log(response);
     res.status(200).send(response);
   }).catch(function(responseError){
+    console.log(responseError);
     res.status(responseError.response.statusCode).send(responseError);
   });
 });

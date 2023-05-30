@@ -1,24 +1,20 @@
-export async function oneWaySearch(payload) {
-    var response=await fetch(`http://127.0.0.1:3000/flights/one-way/${payload.load0.from}/${payload.load0.to}/${payload.load0.departdate}/${payload.adult}/${payload.child}`)
-    var data=await response.json();
-    return {'response0':{'data' :data}};
+export async function oneWaySearch(tripInformation) {
+    var response=await fetch(`http://127.0.0.1:3000/flights/one-way/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.adult}/${tripInformation.child}`)
+    return {'response0':{'data' :await response.json()}};
 }
 
 
-
-export async function roundTripSearch(payload) {
-    var response=await fetch(`http://127.0.0.1:3000/flights/round-trip/${payload.load0.from}/${payload.load0.to}/${payload.load0.departdate}/${payload.returndate}/${payload.adult}/${payload.child}`)
-    var data=await response.json();
-    return {'response0':{'data' :data}};
+export async function roundTripSearch(tripInformation) {
+    var response=await fetch(`http://127.0.0.1:3000/flights/round-trip/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.returndate}/${tripInformation.adult}/${tripInformation.child}`)
+    return {'response0':{'data' :await response.json()}};
 }
 
 
-
-export async function multiCitySearch(payload) {
-    var URL=payload.adult+'/'+payload.child;
+export async function multiCitySearch(tripInformation) {
+    var URL=tripInformation.adult+'/'+tripInformation.child;
     for(let i=0;i<5;i++){
-        if(payload.hasOwnProperty('load'+i) && payload['load'+i].from!==undefined && payload['load'+i].to!==undefined && payload['load'+i].departdate!==undefined ){
-            URL+='/'+payload['load'+i].from+'/'+payload['load'+i]['to']+'/'+payload['load'+i]['departdate'];
+        if(tripInformation.hasOwnProperty('trip'+i) && tripInformation['trip'+i].source!==undefined && tripInformation['trip'+i].destination!==undefined && tripInformation['trip'+i].departdate!==undefined ){
+            URL+='/'+tripInformation['trip'+i].source+'/'+tripInformation['trip'+i].destination+'/'+tripInformation['trip'+i].departdate;
         }
     }
 
@@ -28,5 +24,3 @@ export async function multiCitySearch(payload) {
     var data=await response.json();
     return data;
 }
-
-//export {oneWaySearch,roundTripSearch,multiCitySearch};

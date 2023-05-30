@@ -12,15 +12,15 @@ template.innerHTML = `
                             <input type="text" class="to" name="To">
                             <div class="autoCompleteContainer"></div>
                         </div>
-                        <div name="departDate">
+                        <div name="departDateContainer">
                             <label for="depart" id="depart" class="fromtodepartlabel">Depart : </label>
-                            <input type="date" class="depart" name="Depart">
+                            <input type="date" class="depart" name="DepartDate">
                         </div>
                         <div name="addDeleteButton">
                             <button id="add" class="add" >+</button>
                             <button id="delete" class="delete" >-</button>
                         </div>
-                        <div name="returnDate">
+                        <div name="returnDateContainer">
                             <label for="ReturnDate" id="ReturnDate" class="returndate" >Return : </label>
                             <input class="returninput" type="date" name="ReturnDate">
                         </div>
@@ -45,7 +45,7 @@ class TripInformation extends HTMLElement {
     }
 
 
-    
+
     deleteButtonEventHandler() {
         this.shadowRoot.querySelector('.delete').addEventListener('click', () => {
             if (this.hasAttribute("value")) {
@@ -150,8 +150,8 @@ class TripInformation extends HTMLElement {
         for (let i = 1; i < multiTripCount; i++) {
             adultElement = document.body.querySelector(`[from-to-depart=from-to-depart_${i}]`).shadowRoot.querySelector(".adultMultiCityShow");
             childElement = document.body.querySelector(`[from-to-depart=from-to-depart_${i}]`).shadowRoot.querySelector(".childMultiCityShow");
-            
-            
+
+
             if (adultElement != null) {
                 adultValue = adultElement.querySelector("input").value;
                 this.addClassesToElement(adultElement, ["adultMultiCityHide"]);
@@ -160,7 +160,7 @@ class TripInformation extends HTMLElement {
             }
 
 
-            if(childElement!=null){
+            if (childElement != null) {
                 childValue = childElement.querySelector("input").value;
                 this.addClassesToElement(childElement, ["childMultiCityHide"]);
                 this.removeClassesFromElement(childElement, ["childOneWay", "childRoundTrip", "childMultiCityShow"]);
@@ -168,27 +168,27 @@ class TripInformation extends HTMLElement {
 
         }
 
-        
+
         let lastMultiCityTripInformationActive = document.body.querySelectorAll(`[from-to-depart=from-to-depart_${multiTripCount}]`);
         lastMultiCityTripInformationActive = lastMultiCityTripInformationActive[lastMultiCityTripInformationActive.length - 1];
-        
-        
+
+
         if (adultValue != null) {
             lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=adult]").querySelector("input").value = adultValue;
         }
-        
-        
+
+
         if (childValue != null) {
             lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=child]").querySelector("input").value = childValue;
         }
-        
-        
+
+
         this.addClassesToElement(lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=adult]"), ["adultMultiCityShow"]);
-        this.removeClassesFromElement(lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=adult]"),["adultOneWay", "adultRoundTrip", "adultMultiCityHide"]); 
-        
-        
+        this.removeClassesFromElement(lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=adult]"), ["adultOneWay", "adultRoundTrip", "adultMultiCityHide"]);
+
+
         this.addClassesToElement(lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=child]"), ["childMultiCityShow"]);
-        this.removeClassesFromElement(lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=child]"),["childOneWay", "childRoundTrip", "childMultiCityHide"]); 
+        this.removeClassesFromElement(lastMultiCityTripInformationActive.shadowRoot.querySelector("[name=child]"), ["childOneWay", "childRoundTrip", "childMultiCityHide"]);
     }
 
 
@@ -232,19 +232,19 @@ class TripInformation extends HTMLElement {
 
         this.addClassesToElement(parent, ["oneWay"]);
         this.removeClassesFromElement(parent, ["roundTrip", "multiCity"]);
-        
+
         this.addClassesToElement(parent.querySelector("[name=from]"), ["fromOneWay"]);
         this.removeClassesFromElement(parent.querySelector("[name=from]"), ["fromRoundTrip", "fromMultiCity"]);
-        
+
         this.addClassesToElement(parent.querySelector("[name=to]"), ["toOneWay"]);
         this.removeClassesFromElement(parent.querySelector("[name=to]"), ["toRoundTrip", "toMultiCity"]);
 
-        this.addClassesToElement(parent.querySelector("[name=departDate]"), ["departDateOneWay"]);
-        this.removeClassesFromElement(parent.querySelector("[name=departDate]"),["departDateRoundTrip", "departDateMultiCity"]);
-        
-        this.addClassesToElement(parent.querySelector("[name=returnDate]"), ["returnDateOneWay"]);
-        this.removeClassesFromElement(parent.querySelector("[name=returnDate]"), ["returnDateRoundTrip", "returnDateMultiCity"]);
-        
+        this.addClassesToElement(parent.querySelector("[name=departDateContainer]"), ["departDateOneWay"]);
+        this.removeClassesFromElement(parent.querySelector("[name=departDateContainer]"), ["departDateRoundTrip", "departDateMultiCity"]);
+
+        this.addClassesToElement(parent.querySelector("[name=returnDateContainer]"), ["returnDateOneWay"]);
+        this.removeClassesFromElement(parent.querySelector("[name=returnDateContainer]"), ["returnDateRoundTrip", "returnDateMultiCity"]);
+
         this.addClassesToElement(parent.querySelector("[name=addDeleteButton]"), ["addDeleteButtonOneWay"]);
         this.removeClassesFromElement(parent.querySelector("[name=addDeleteButton]"), ["addDeleteButtonRoundTrip", "addDeleteButtonMultiCity"]);
 
@@ -262,19 +262,19 @@ class TripInformation extends HTMLElement {
 
         this.addClassesToElement(parent, ["roundTrip"]);
         this.removeClassesFromElement(parent, ["oneWay", "multiCity"]);
-        
+
         this.addClassesToElement(parent.querySelector("[name=from]"), ["fromRoundTrip"]);
         this.removeClassesFromElement(parent.querySelector("[name=from]"), ["fromOneWay", "fromMultiCity"]);
-        
+
         this.addClassesToElement(parent.querySelector("[name=to]"), ["toRoundTrip"]);
         this.removeClassesFromElement(parent.querySelector("[name=to]"), ["toOneWay", "toMultiCity"]);
 
-        this.addClassesToElement(parent.querySelector("[name=departDate]"), ["departDateRoundTrip"]);
-        this.removeClassesFromElement(parent.querySelector("[name=departDate]"),["departDateOneWay", "departDateMultiCity"]);
-        
-        this.addClassesToElement(parent.querySelector("[name=returnDate]"), ["returnDateRoundTrip"]);
-        this.removeClassesFromElement(parent.querySelector("[name=returnDate]"), ["returnDateOneWay", "returnDateMultiCity"]);
-        
+        this.addClassesToElement(parent.querySelector("[name=departDateContainer]"), ["departDateRoundTrip"]);
+        this.removeClassesFromElement(parent.querySelector("[name=departDateContainer]"), ["departDateOneWay", "departDateMultiCity"]);
+
+        this.addClassesToElement(parent.querySelector("[name=returnDateContainer]"), ["returnDateRoundTrip"]);
+        this.removeClassesFromElement(parent.querySelector("[name=returnDateContainer]"), ["returnDateOneWay", "returnDateMultiCity"]);
+
         this.addClassesToElement(parent.querySelector("[name=addDeleteButton]"), ["addDeleteButtonRoundTrip"]);
         this.removeClassesFromElement(parent.querySelector("[name=addDeleteButton]"), ["addDeleteButtonOneWay", "addDeleteButtonMultiCity"]);
 
@@ -292,20 +292,20 @@ class TripInformation extends HTMLElement {
         let parent = this.parent();
 
         this.addClassesToElement(parent, ["multiCity"]);
-        this.removeClassesFromElement(parent, ["oneWay","roundTrip"]);
-        
+        this.removeClassesFromElement(parent, ["oneWay", "roundTrip"]);
+
         this.addClassesToElement(parent.querySelector("[name=from]"), ["fromMultiCity"]);
         this.removeClassesFromElement(parent.querySelector("[name=from]"), ["fromOneWay", "fromRoundTrip"]);
-        
+
         this.addClassesToElement(parent.querySelector("[name=to]"), ["toRoundTrip"]);
         this.removeClassesFromElement(parent.querySelector("[name=to]"), ["toOneWay", "toMultiCity"]);
 
-        this.addClassesToElement(parent.querySelector("[name=departDate]"), ["departDateMultiCity"]);
-        this.removeClassesFromElement(parent.querySelector("[name=departDate]"),["departDateOneWay", "departDateRoundTrip"]);
-        
-        this.addClassesToElement(parent.querySelector("[name=returnDate]"), ["returnDateMultiCity"]);
-        this.removeClassesFromElement(parent.querySelector("[name=returnDate]"), ["returnDateOneWay", "returnDateRoundTrip"]);
-        
+        this.addClassesToElement(parent.querySelector("[name=departDateContainer]"), ["departDateMultiCity"]);
+        this.removeClassesFromElement(parent.querySelector("[name=departDateContainer]"), ["departDateOneWay", "departDateRoundTrip"]);
+
+        this.addClassesToElement(parent.querySelector("[name=returnDateContainer]"), ["returnDateMultiCity"]);
+        this.removeClassesFromElement(parent.querySelector("[name=returnDateContainer]"), ["returnDateOneWay", "returnDateRoundTrip"]);
+
         this.addClassesToElement(parent.querySelector("[name=addDeleteButton]"), ["addDeleteButtonMultiCity"]);
         this.removeClassesFromElement(parent.querySelector("[name=addDeleteButton]"), ["addDeleteButtonOneWay", "addDeleteButtonRoundTrip"]);
 
@@ -343,85 +343,107 @@ class TripInformation extends HTMLElement {
 
 
     autocompleteInputSearchBox() {
+        var userInputFromTimerID;
+        var userInputToTimerID;
 
-        this.shadowRoot.querySelector("input[name=From]").addEventListener("keyup", async (event) => {
-            
+        this.shadowRoot.querySelector("input[name=From]").addEventListener("input", async (event) => {
+            clearTimeout(userInputFromTimerID);
             let userInput = event.target.value;
-            let autoCompleteContainer = this.shadowRoot.querySelector("div[name=from]").querySelector(".autoCompleteContainer");
-
-
-            if (userInput === '') {
-                this.hideAirportSearchSuggestionResult(autoCompleteContainer);
-
-            } else {
-
-                if (autoCompleteContainer.querySelector("ul")) {
-                    autoCompleteContainer.querySelector("ul").remove();
-                }
-
-
-                let suggestedAirports = await this.AirportSearch(userInput);
-                let filteredAirportSuggestion = this.filteringAirportSearchSuggestion(suggestedAirports, userInput);
-                let sortedAirportSuggestion=this.sortingAirportSearchSuggestion(filteredAirportSuggestion);
-
-
-                if (Object.keys(sortedAirportSuggestion).length >= 5) {
-                    suggestedAirports = sortedAirportSuggestion.slice(0, 5);
-                }
-
-                let inputElement = this.shadowRoot.querySelector("input[name=From]");
-                let element = this.createElementForSearch(inputElement, autoCompleteContainer, filteredSuggestion);
-                autoCompleteContainer.appendChild(element);
-
-                this.showAirportSearchSuggestionResult(autoCompleteContainer);
+            if (userInput != "") {
+                userInputFromTimerID = setTimeout(async () => {
+                    await this.populateAirportDropdownOfFromInput(userInput);
+                }, 1000);
             }
-
         });
 
 
-        this.shadowRoot.querySelector("input[name=To]").addEventListener("keyup", async (event) => {
-            
+        this.shadowRoot.querySelector("input[name=To]").addEventListener("input", async (event) => {
+            clearTimeout(userInputToTimerID);
             let userInput = event.target.value;
-            let autoCompleteContainer = this.shadowRoot.querySelector("div[name=to]").querySelector(".autoCompleteContainer");
-
-
-            if (userInput === '') {
-                
-                this.hideAirportSearchSuggestionResult(autoCompleteContainer);
-
-            } else {
-
-                if (autoCompleteContainer.querySelector("ul")) {
-                    autoCompleteContainer.querySelector("ul").remove();
-                }
-
-
-                let suggestedAirports = await this.AirportSearch(userInput);
-                let filteredAirportSuggestion = this.filteringAirportSearchSuggestion(suggestedAirports, userInput);
-                let sortedAirportSuggestion=this.sortingAirportSearchSuggestion(filteredAirportSuggestion);
-
-
-                if (Object.keys(sortedAirportSuggestion).length >= 5) {
-                    suggestedAirports = sortedAirportSuggestion.slice(0, 5);
-                }
-
-                let inputElement = this.shadowRoot.querySelector("input[name=To]");
-                let element = this.createElementForSearch(inputElement, autoCompleteContainer, filteredSuggestion);
-                autoCompleteContainer.appendChild(element);
-
-                this.showAirportSearchSuggestionResult(autoCompleteContainer);
+            if (userInput != "") {
+                userInputToTimerID = setTimeout(async () => {
+                    await this.populateAirportDropdownOfToInput(userInput);
+                }, 1000);
             }
-
         });
 
     }
 
-    hideAirportSearchSuggestion(airportSearchSuggestionContainer){
+    async populateAirportDropdownOfFromInput(userInput) {
+        let autoCompleteContainer = this.shadowRoot.querySelector("div[name=from]").querySelector(".autoCompleteContainer");
+
+
+        if (userInput === '') {
+            this.hideAirportSearchSuggestionResult(autoCompleteContainer);
+
+        } else {
+
+
+            if (autoCompleteContainer.querySelector("ul")) {
+                autoCompleteContainer.querySelector("ul").remove();
+            }
+
+
+            let suggestedAirports = await this.AirportSearch(userInput);
+            // console.log(suggestedAirports);
+            let filteredAirportSuggestion = this.filteringAirportSearchSuggestion(suggestedAirports, userInput);
+            // console.log(filteredAirportSuggestion);
+            let sortedAirportSuggestion = this.sortingAirportSearchSuggestion(filteredAirportSuggestion);
+
+
+            if (Object.keys(sortedAirportSuggestion).length >= 5) {
+                suggestedAirports = sortedAirportSuggestion.slice(0, 5);
+            }
+
+            let inputElement = this.shadowRoot.querySelector("input[name=From]");
+            let element = this.createSearchSuggestionList(inputElement, autoCompleteContainer, suggestedAirports);
+            autoCompleteContainer.appendChild(element);
+
+            this.showAirportSearchSuggestionResult(autoCompleteContainer);
+        }
+    }
+
+
+    async populateAirportDropdownOfToInput(userInput) {
+        let autoCompleteContainer = this.shadowRoot.querySelector("div[name=to]").querySelector(".autoCompleteContainer");
+
+
+        if (userInput === '') {
+
+            this.hideAirportSearchSuggestionResult(autoCompleteContainer);
+
+        } else {
+
+            if (autoCompleteContainer.querySelector("ul")) {
+                autoCompleteContainer.querySelector("ul").remove();
+            }
+
+
+            let suggestedAirports = await this.AirportSearch(userInput);
+            // console.log(suggestedAirports);
+            let filteredAirportSuggestion = this.filteringAirportSearchSuggestion(suggestedAirports, userInput);
+            // console.log(filteredAirportSuggestion);
+            let sortedAirportSuggestion = this.sortingAirportSearchSuggestion(filteredAirportSuggestion);
+
+
+            if (Object.keys(sortedAirportSuggestion).length >= 5) {
+                suggestedAirports = sortedAirportSuggestion.slice(0, 5);
+            }
+
+            let inputElement = this.shadowRoot.querySelector("input[name=To]");
+            let element = this.createSearchSuggestionList(inputElement, autoCompleteContainer, suggestedAirports);
+            autoCompleteContainer.appendChild(element);
+
+            this.showAirportSearchSuggestionResult(autoCompleteContainer);
+        }
+    }
+
+    hideAirportSearchSuggestionResult(airportSearchSuggestionContainer) {
         this.addClassesToElement(airportSearchSuggestionContainer, ['autoCompleteFormContainerHide']);
         this.removeClassesFromElement(airportSearchSuggestionContainer, ['autoCompleteFormContainerShow']);
     }
 
-    showAirportSearchSuggestionResult(airportSearchSuggestionContainer){
+    showAirportSearchSuggestionResult(airportSearchSuggestionContainer) {
         this.addClassesToElement(airportSearchSuggestionContainer, ['autoCompleteFormContainerShow']);
         this.removeClassesFromElement(airportSearchSuggestionContainer, ['autoCompleteFormContainerHide']);
     }
@@ -441,11 +463,12 @@ class TripInformation extends HTMLElement {
         airportData = airportData.filter((airportInformation) => {
             return airportInformation.detailedName.toLowerCase().startsWith(searchInputByUser.toLowerCase());
         });
+        return airportData;
     }
 
 
 
-    sortingAirportSearchSuggestion(airportData){
+    sortingAirportSearchSuggestion(airportData) {
         airportData.sort(function (firstairport, secondAiport) {
             return firstairport.iataCode < secondAiport.iataCode ? -1 : 1;
         });
@@ -463,7 +486,7 @@ class TripInformation extends HTMLElement {
             listItem.setAttribute("class", "listItemShow");
             listItem.addEventListener("click", (event) => {
                 inputElement.value = airport.iataCode;
-                this.hideAirportSearchSuggestion(autoCompleteContainer);
+                this.hideAirportSearchSuggestionResult(autoCompleteContainer);
             });
             unorderedList.appendChild(listItem);
         });
@@ -512,3 +535,22 @@ constructor() {
     //     document.querySelector(`[from-to-depart=from-to-depart_${value}]`).shadowRoot.querySelector(".fromToDepartContainer").style.display = "none";
     // });
 }*/
+
+
+//logic for autocompletecdropdown airport
+/*var fromtodepart=document.querySelector('[from-to-depart=from-to-depart_1]').shadowRoot.querySelector("input.from");
+            fromtodepart.addEventListener("input",function(e){
+                var iatacode=fromtodepart.value;
+                if(iatacode!=''){
+                    iatacodefetchtime=Date.now();
+                    console.log("Event Fired At:",iatacode,(iatacodefetchtime%10000));
+                    setTimeout(async()=>{
+                        console.log("CallBack Time Diff:",iatacode,Date.now()-iatacodefetchtime,Date.now()%10000,iatacodefetchtime%10000);
+                        if(Date.now()-iatacodefetchtime>500){
+                            var result=await AirportSearch(iatacode);
+                            DropDownMenuIataCode(fromtodepart,iatacode,result);
+                        }
+                    },1000);
+                    
+                }
+            })*/
