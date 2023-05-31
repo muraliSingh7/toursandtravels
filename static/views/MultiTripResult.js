@@ -1,5 +1,5 @@
 import { sortByPrice, sortByTime, sortByDuration } from '../commonfunctions/sorting.js';
-import { OneWayResult } from './OneWayResult/OneWayResult.js';
+import { OneWayAndRoundTripHandler } from './OneWayAndRoundTripHandler/OneWayAndRoundTripHandler.js';
 export class MultiTripResult{
   constructor(triptype, payload, result) {
     let multiCityView=[];
@@ -64,7 +64,7 @@ export class MultiTripResult{
 
 
 
-      multiCityView.push(new OneWayResult(triptype,i, payload['load' + i]['from'], payload['load' + i]['to'], result[i]));
+      multiCityView.push(new OneWayAndRoundTripHandler(triptype,i, payload['load' + i]['from'], payload['load' + i]['to'], result[i]));
     }
 
     document.body.appendChild(tripTitle);

@@ -2,8 +2,7 @@ import { getTripType } from './commonfunctions/triptype.js';
 import { processingData } from './processingdata.js';
 import { oneWaySearch, roundTripSearch, multiCitySearch } from '../server/routes/flightoffers.js'
 import { FilterCache } from './filterCache/filterCache.js';
-import { OneWayResult } from './views/OneWayResult/OneWayResult.js'
-import { RoundWayResult } from './views/RoundWayResult.js'
+import { OneWayAndRoundTripHandler } from './views/OneWayAndRoundTripHandler/OneWayAndRoundTripHandler.js'
 import { MultiTripResult } from './views/MultiTripResult.js'
 
 
@@ -65,14 +64,14 @@ addEventListener('DOMContentLoaded', (event) => {
             localStorage.setItem("oneWaySearchResult", JSON.stringify( oneWaySearchResult));
             localStorage.getItem("oneWaySearchResult");
             // let filter = new FilterCache(1, JSON.parse(localStorage.getItem("finalResult"))[0]);
-            let oneWayViewHandler = new OneWayResult(tripType, 0, tripInformation.trip0.source, tripInformation.trip0.destination, JSON.parse(localStorage.getItem("oneWaySearchResult"))[0]);
+            let oneWayViewHandler = new OneWayAndRoundTripHandler(tripType, 0, tripInformation.trip0.source, tripInformation.trip0.destination, JSON.parse(localStorage.getItem("oneWaySearchResult"))[0]);
             oneWayViewHandler.main();
         } else if (tripType == "Round-Trip") {
             let roundTripSearchResult = await processingData(await roundTripSearch(tripInformation));
             // console.log(roundTripSearchResult);
             localStorage.setItem("roundTripSearchResult", JSON.stringify(roundTripSearchResult));
             localStorage.getItem("roundTripSearchResult");
-            let roundTripViewHandler = new OneWayResult(tripType, 0, tripInformation.trip0.source, tripInformation.trip0.destination, JSON.parse(localStorage.getItem("roundTripSearchResult"))[0]);
+            let roundTripViewHandler = new OneWayAndRoundTripHandler(tripType, 0, tripInformation.trip0.source, tripInformation.trip0.destination, JSON.parse(localStorage.getItem("roundTripSearchResult"))[0]);
             roundTripViewHandler.main();
         } else {
             let multiCitySearchResult = await multiCitySearch(tripInformation);
