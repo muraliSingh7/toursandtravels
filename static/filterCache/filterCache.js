@@ -21,9 +21,11 @@ export class FilterCache {
     async getFlightCountAndMinimumPriceByStoppages(tripNumber) {
 
         let stoppageDetails = {};
+        
         let filterParameters = [{}, {}];
         filterParameters[0]['numberOfStopsFromSourceFromTrip' + tripNumber] = { $gte: 0 }
         filterParameters[1]['price'] = { $gt: 0 };
+
         let sortParameters = {};
         sortParameters['numberOfStopsFromSourceFromTrip' + tripNumber] = 1;
 

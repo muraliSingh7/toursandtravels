@@ -28,10 +28,10 @@ export class OneWayAndRoundTripHandler {
 
     createFlightDataContainerForViewer() {
         let resultViewContainer = document.createElement('div');
-        resultViewContainer.setAttribute('name', 'trip');
+        resultViewContainer.setAttribute('name', 'tripFlightDataView');
         resultViewContainer.setAttribute('class', 'resultViewContainer');
-        document.body.appendChild(resultViewContainer);
-        document.querySelector("[name=trip]").innerHTML = "";
+        document.body.querySelector('[name=flightDataViewContainer]').appendChild(resultViewContainer);
+        document.querySelector("[name=tripFlightDataView]").innerHTML = "";
         this.filterPanelCreation();
         this.sortPanelCreation();
     }
@@ -40,14 +40,14 @@ export class OneWayAndRoundTripHandler {
         let filterPanel = document.createElement('div');
         filterPanel.setAttribute('name', 'filterPanel');
         filterPanel.setAttribute('class', 'filterPanel');
-        document.querySelector('[name=trip]').appendChild(filterPanel);
+        document.querySelector('[name=tripFlightDataView]').appendChild(filterPanel);
     }
 
     sortPanelCreation() {
         let sortPanel = document.createElement('div');
         sortPanel.setAttribute('name', 'sortPanel');
         sortPanel.setAttribute('class', 'sortPanel');
-        document.querySelector('[name=trip]').appendChild(sortPanel);
+        document.querySelector('[name=tripFlightDataView]').appendChild(sortPanel);
     }
 
     async createElementForFilterParameters(source, destination) {
@@ -353,7 +353,7 @@ export class OneWayAndRoundTripHandler {
     }
 
     async displayFilteredFlightData() {
-        let result = this.responseOfFilterAndSortParametersSelectedByViewer();
+        let result = await this.responseOfFilterAndSortParametersSelectedByViewer();
         // console.log(result);
         if (this.triptype == "Round-Trip") {
             this.display(result, 2);
@@ -489,6 +489,7 @@ export class OneWayAndRoundTripHandler {
         resultPanel.setAttribute('name', 'resultPanel');
         resultPanel.setAttribute('class', 'resultPanel');
         document.querySelector('[name=sortPanel]').appendChild(resultPanel);
+        console.log(data);
 
 
         for (let i = 0; i < Math.min(data.length, 50); i++) {

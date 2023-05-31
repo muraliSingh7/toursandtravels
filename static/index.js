@@ -1,9 +1,8 @@
 import { getTripType } from './commonfunctions/triptype.js';
 import { processingData } from './processingdata.js';
 import { oneWaySearch, roundTripSearch, multiCitySearch } from '../server/routes/flightoffers.js'
-import { FilterCache } from './filterCache/filterCache.js';
 import { OneWayAndRoundTripHandler } from './views/OneWayAndRoundTripHandler/OneWayAndRoundTripHandler.js'
-import { MultiTripResult } from './views/MultiTripResult.js'
+import { MultiTripHandler } from './views/MultiTripHandler.js'
 
 
 
@@ -36,7 +35,7 @@ addEventListener('DOMContentLoaded', (event) => {
 
 
         var tripType = getTripType();
-        console.log(tripType);
+        // console.log(tripType);
 
         var listOfTripInformationElement = document.body.querySelectorAll('from-to-depart');
 
@@ -57,31 +56,37 @@ addEventListener('DOMContentLoaded', (event) => {
 
 
         if (tripType == "One-Way") {
+            clearViewArea();
             let oneWaySearchResult = await oneWaySearch(tripInformation);
-            console.log(oneWaySearchResult);
+            // console.log(oneWaySearchResult);
             oneWaySearchResult = await processingData(oneWaySearchResult);
             // console.log(finalResult);
             localStorage.setItem("oneWaySearchResult", JSON.stringify( oneWaySearchResult));
-            localStorage.getItem("oneWaySearchResult");
-            // let filter = new FilterCache(1, JSON.parse(localStorage.getItem("finalResult"))[0]);
             let oneWayViewHandler = new OneWayAndRoundTripHandler(tripType, 0, tripInformation.trip0.source, tripInformation.trip0.destination, JSON.parse(localStorage.getItem("oneWaySearchResult"))[0]);
             oneWayViewHandler.main();
         } else if (tripType == "Round-Trip") {
+            clearViewArea();
             let roundTripSearchResult = await processingData(await roundTripSearch(tripInformation));
             // console.log(roundTripSearchResult);
             localStorage.setItem("roundTripSearchResult", JSON.stringify(roundTripSearchResult));
-            localStorage.getItem("roundTripSearchResult");
             let roundTripViewHandler = new OneWayAndRoundTripHandler(tripType, 0, tripInformation.trip0.source, tripInformation.trip0.destination, JSON.parse(localStorage.getItem("roundTripSearchResult"))[0]);
             roundTripViewHandler.main();
         } else {
+            clearViewArea();
             let multiCitySearchResult = await multiCitySearch(tripInformation);
             // console.log(multiCitySearchResult);
             multiCitySearchResult = await processingData(multiCitySearchResult);
             localStorage.setItem("multiCitySearchResult", JSON.stringify(multiCitySearchResult));
-            localStorage.getItem("multiCitySearchResult");
-            let multiCity = new MultiTripResult(tripType, payload, JSON.parse(localStorage.getItem("multiCitySearchResult")));
+            MultiTripHandler(tripType, tripInformation, JSON.parse(localStorage.getItem("multiCitySearchResult")));
         }
     });
+
+    
 });
 
-
+function clearViewArea(){
+    let flightDataViewContainer=document.body.querySelector('[name=flightDataViewContainer]');
+    while (flightDataViewContainer.firstChild) {
+        flightDataViewContainer.removeChild(flightDataViewContainer.firstChild);
+    }
+}
