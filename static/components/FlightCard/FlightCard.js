@@ -1,3 +1,4 @@
+{/* <p class="stoppage" name="stoppage"></p> */}
 const FlightCardTemplate = document.createElement("template");
 const oneTripDetailTemplate = document.createElement("template");
 oneTripDetailTemplate.innerHTML = `<div class="flex-row">
@@ -7,7 +8,8 @@ oneTripDetailTemplate.innerHTML = `<div class="flex-row">
     </div>
     <div>
         <p class="duration" name="duration"></p>
-        <p class="stoppage" name="stoppage"></p>
+        <canvas class="stoppage" name="stoppage"></canvas>
+        <p class="numberOfStoppage" name="numberOfStoppage"></p>
     </div>
     <div>
         <p class="time" name="arrival-time"></p>

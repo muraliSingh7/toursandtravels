@@ -396,8 +396,11 @@ class TripInformation extends HTMLElement {
             }
 
             let inputElement = this.shadowRoot.querySelector("input[name=From]");
-            let element = this.createSearchSuggestionList(inputElement, autoCompleteContainer, suggestedAirports);
-            autoCompleteContainer.appendChild(element);
+            let airportNamesDropdownList = this.createSearchSuggestionList(inputElement, autoCompleteContainer, suggestedAirports);
+            Array.from(autoCompleteContainer.querySelectorAll('ul')).forEach((autoCompleteDropdownList)=>{
+                autoCompleteDropdownList.remove();
+            });
+            autoCompleteContainer.appendChild(airportNamesDropdownList);
 
             this.showAirportSearchSuggestionResult(autoCompleteContainer);
         }
@@ -414,11 +417,6 @@ class TripInformation extends HTMLElement {
 
         } else {
 
-            if (autoCompleteContainer.querySelector("ul")) {
-                autoCompleteContainer.querySelector("ul").remove();
-            }
-
-
             let suggestedAirports = await this.AirportSearch(userInput);
             // console.log(suggestedAirports);
             let filteredAirportSuggestion = this.filteringAirportSearchSuggestion(suggestedAirports, userInput);
@@ -431,8 +429,11 @@ class TripInformation extends HTMLElement {
             }
 
             let inputElement = this.shadowRoot.querySelector("input[name=To]");
-            let element = this.createSearchSuggestionList(inputElement, autoCompleteContainer, suggestedAirports);
-            autoCompleteContainer.appendChild(element);
+            let airportNamesDropdownList = this.createSearchSuggestionList(inputElement, autoCompleteContainer, suggestedAirports);
+            Array.from(autoCompleteContainer.querySelectorAll('ul')).forEach((autoCompleteDropdownList)=>{
+                autoCompleteDropdownList.remove();
+            });
+            autoCompleteContainer.appendChild(airportNamesDropdownList);
 
             this.showAirportSearchSuggestionResult(autoCompleteContainer);
         }

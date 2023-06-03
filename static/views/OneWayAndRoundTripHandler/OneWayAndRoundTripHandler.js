@@ -113,7 +113,7 @@ export class OneWayAndRoundTripHandler {
     }
 
 
-    async initializingFilterCache(){
+    async initializingFilterCache() {
         await this.filter.init(this.tripNumber, this.flightData);
     }
 
@@ -203,7 +203,7 @@ export class OneWayAndRoundTripHandler {
         var timing = ['0AM-6AM', '6AM-12PM', '12PM-6PM', '6PM-12AM'];
         var timeHeader = ['Before 6AM', '6AM-12PM', '12PM-6PM', 'After 6PM']
         var time = [0, 21600, 43200, 64800, 86400];
-        var imgSource = ["https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/morning_active.png?v=1",
+        var imgSource = ["https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/morning_inactive.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/noon_inactive.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/evening_inactive.png?v=1",
             "https://imgak.mmtcdn.com/flights/assets/media/dt/listing/left-filters/night_inactive.png?v=1"
@@ -347,7 +347,7 @@ export class OneWayAndRoundTripHandler {
 
     }
 
-    async responseOfFilterAndSortParametersSelectedByViewer(){
+    async responseOfFilterAndSortParametersSelectedByViewer() {
         const response = await this.filter.filtering(this.filterAndSortParametersSelectedByViewer);
         return response;
     }
@@ -500,7 +500,13 @@ export class OneWayAndRoundTripHandler {
                 card.shadowRoot.querySelectorAll("[name=depart-time]")[j].textContent = data[i]['departureFromSourceAsPerTimeFromTrip' + j];
                 card.shadowRoot.querySelectorAll('[name="depart-place"]')[j].textContent = data[i]['sourceFromTrip' + j];
                 card.shadowRoot.querySelectorAll("[name=duration]")[j].textContent = data[i]['durationFromTrip' + j];
-                card.shadowRoot.querySelectorAll("[name=stoppage]")[j].textContent = data[i]['numberOfStopsFromSourceFromTrip' + j];
+                // card.shadowRoot.querySelectorAll("[name=stoppage]")[j].textContent = data[i]['numberOfStopsFromSourceFromTrip' + j];
+                this.drawCanvasForNumberOfStoppage(card.shadowRoot.querySelectorAll("[name=stoppage]")[j], data[i]['numberOfStopsFromSourceFromTrip' + j]);
+                if (data[i]['numberOfStopsFromSourceFromTrip' + j] == 0) {
+                    card.shadowRoot.querySelectorAll("[name=numberOfStoppage]")[j].textContent = "Non-Stop";
+                } else {
+                    card.shadowRoot.querySelectorAll("[name=numberOfStoppage]")[j].textContent = data[i]['numberOfStopsFromSourceFromTrip' + j] + " Stop";
+                }
                 card.shadowRoot.querySelectorAll("[name=arrival-time]")[j].textContent = data[i]['arrivalAtDestinationAsPerTimeFromTrip' + j];
                 card.shadowRoot.querySelectorAll("[name=arrival-place]")[j].textContent = data[i]['destinationFromTrip' + j];
             }
@@ -508,5 +514,52 @@ export class OneWayAndRoundTripHandler {
 
             document.querySelector(`[name=resultPanel]`).appendChild(card);
         }
+    }
+
+    drawCanvasForNumberOfStoppage(canvasElement, numberOfStoppage) {
+        const canvas = canvasElement;
+        const ctx = canvas.getContext('2d');
+        const pointCount = numberOfStoppage;
+        ctx.canvas.width = (20 * pointCount) + 40;
+        ctx.canvas.height = 40
+        // Draw a thick green line
+        ctx.beginPath();
+        ctx.moveTo(0, 20); // Start point
+        ctx.lineTo((pointCount * 20) + 40, 20); // End point
+        ctx.lineWidth = 5; // Set line width to 10 pixels
+        ctx.strokeStyle = 'green'; // Set stroke color to green
+        ctx.stroke();
+
+        // Draw circular red points on the line
+        // const pointCount = 4; // Number of points
+        let startX = 20; // Start x-coordinate of the line
+        const endX = (pointCount * 20) + 20; // End x-coordinate of the line
+        let spacing;
+        if (pointCount <= 1) {
+            spacing = 0;
+            startX = 30;
+        } else {
+            spacing = (endX - startX) / (pointCount - 1); // Calculate spacing between points
+        }
+
+        // Set fill color to red
+        for (let i = 0; i < pointCount; i++) {
+            const x = startX + i * spacing; // Calculate x-coordinate of each point
+            const y = 20; // y-coordinate (same as line's y-coordinate)
+
+            // Draw outer circle
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, 2 * Math.PI); // Draw a circle centered at (x, y) with radius 10
+            ctx.fillStyle = 'red';
+            ctx.fill();
+
+            // Draw inner circle
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI); // Draw a circle centered at (x, y) with radius 5
+            ctx.fillStyle = 'white'; // Set fill color to white
+            ctx.fill();
+        }
+
+
     }
 }
