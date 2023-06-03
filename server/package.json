@@ -1,4 +1,20 @@
 {
+  "name": "toursandtravels",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MS07062000/toursandtravels.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MS07062000/toursandtravels/issues"
+  },
+  "homepage": "https://github.com/MS07062000/toursandtravels#readme",
   "dependencies": {
     "amadeus": "^7.0.0",
     "cors": "^2.8.5",
