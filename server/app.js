@@ -2,11 +2,12 @@ const Amadeus = require('amadeus');
 const express = require("express");
 const app = express()
 const cors = require('cors');
+require('dotenv').config();
 
 
 const amadeus = new Amadeus({
-  clientId: "07jzwkv2FlrcJ6UX0BRA5OcG6dGFTl6i",
-  clientSecret: "3CKPw8ZrZp7igUnM"
+  clientId: process.env.CLIENTID,
+  clientSecret: process.env.CLIENTSECRET
 });
 //process.env.amadeus_client_id,
 

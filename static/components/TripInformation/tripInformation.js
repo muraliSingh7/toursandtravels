@@ -4,17 +4,17 @@ template.innerHTML = `
                     <div class="fromToDepartContainer">
                         <div name="from">
                             <label for="from" id="from" class="fromtodepartlabel">From : </label>
-                            <input type="text" class="from" name="From">
+                            <input type="text" class="from" name="From" required>
                             <div class="autoCompleteContainer"></div>
                         </div>
                         <div name="to">
                             <label for="to" id="to" class="fromtodepartlabel">To : </label>
-                            <input type="text" class="to" name="To">
+                            <input type="text" class="to" name="To" required>
                             <div class="autoCompleteContainer"></div>
                         </div>
                         <div name="departDateContainer">
                             <label for="depart" id="depart" class="fromtodepartlabel">Depart : </label>
-                            <input type="date" class="depart" name="DepartDate">
+                            <input type="date" class="depart" name="DepartDate" required>
                         </div>
                         <div name="addDeleteButton">
                             <button id="add" class="add" >+</button>
@@ -22,15 +22,15 @@ template.innerHTML = `
                         </div>
                         <div name="returnDateContainer">
                             <label for="ReturnDate" id="ReturnDate" class="returndate" >Return : </label>
-                            <input class="returninput" type="date" name="ReturnDate">
+                            <input class="returninput" type="date" name="ReturnDate" required>
                         </div>
                         <div name="adult">
                             <label for="Adult" id="Adult" class="adultAndChildLabel" >Adult : </label>
-                            <input type="number" id="Adult" name="Adult" min="1" max="5" class="adultinput">
+                            <input type="number" id="Adult" name="Adult" min="1" max="5" class="adultinput" required>
                         </div>
                         <div name="child">
                             <label for="Children" id="Children" class="adultAndChildLabel" >Children : </label>
-                            <input type="number" id="Children" name="Children" min="0" max="5" class="childinput">
+                            <input type="number" id="Children" name="Children" min="0" max="5" class="childinput" required>
                         </div>
                     </div>`;
 class TripInformation extends HTMLElement {
