@@ -1,127 +1,91 @@
 const Amadeus = require('amadeus');
 const express = require("express");
 const app = express()
+const http = require('http');
+const path=require('path');
 const cors = require('cors');
 require('dotenv').config();
 
+const getflightoffers = require('./function_api/getflightoffers.js');
+const getAirportLocations = require('./function_api/getAirportLocations.js');
 
 const amadeus = new Amadeus({
   clientId: process.env.CLIENTID,
   clientSecret: process.env.CLIENTSECRET
 });
-//process.env.amadeus_client_id,
+
 
 app.use(cors());
+// app.use('/static', express.static('static'));
+app.use('/static', express.static('static'));
+app.use('/', express.static('./static/index.html'));
+app.use('/Assets', express.static('./static/Assets'));
 
-function getflightoffers(originLocationCode, destinationLocationCode, departureDate, returnDate, adults, children) {
+app.get('/', (req, res) => {
+  res.redirect('/flights');
+});
 
-  if (returnDate) {
-    console.log("Round-Trip");
-    return amadeus.client.get('/v2/shopping/flight-offers', {
-      originLocationCode: originLocationCode,
-      destinationLocationCode: destinationLocationCode,
-      departureDate: departureDate,
-      adults: adults,
-      children: children,
-      returnDate: returnDate,
-      // max:2000,
-    })/*.then(function (response) {
-          //console.log(response.data);
-          res.status(200).send(response.data);
-      }).catch(function (responseError) {
-          //console.log(responseError.code);
-          res.status(502).send("Bad Gateway");
-      });*/
-  } else {
-    console.log("One-Way");
-    return amadeus.client.get('/v2/shopping/flight-offers', {
-      originLocationCode: originLocationCode,
-      destinationLocationCode: destinationLocationCode,
-      departureDate: departureDate,
-      adults: adults,
-      children: children,
-      // max:2000,
-    })/*.then(function (response) {
-          //console.log(response.data);
-          res.status(200).send(response.data);
-      }).catch(function (responseError) {
-          //console.log(responseError.code);
-          res.status(502).send("Bad Gateway");
-      });*/
-  }
-}
-
-app.get('/airportsearch/:airportname?',(req,res)=>{
-  amadeus.client.get('/v1/reference-data/locations',{
-    keyword:req.params.airportname,
-    subType:'AIRPORT',
-    'page[limit]':100,
-  }).then(function(response){
-    //console.log(response);
-    res.status(200).send(response);
-  }).catch(function(responseError){
-    console.log(responseError);
-    res.status(responseError.response.statusCode).send(responseError);
-  });
+app.get('/airportsearch/:airportname?', (req, res) => {
+  getAirportLocations(req.params.airportname, res);
 });
 
 
-app.get('/flights/one-way/:from/:to/:departdate/:adult/:children', async(req, res) => {
+app.get('/flights/one-way/:from/:to/:departdate/:adult/:children', async (req, res) => {
   //console.log(req.params);
-  try {
-    var response = await getflightoffers(req.params.from, req.params.to, req.params.departdate, null, req.params.adult, req.params.children);
-    // console.log("Response:");
-    // console.log(response);
-    res.status(200).send(response.data);
-  } catch (responseError) {
-    //console.log(responseError);
-    res.status(responseError.response.statusCode).send(responseError);
-  }
+  await getflightoffers(req.params.from, req.params.to, req.params.departdate, null, req.params.adult, req.params.children, res);
 });
 
 app.get('/flights/round-trip/:from/:to/:departdate/:returndate/:adult/:children', async (req, res) => {
   //console.log("Params: "+req.params);
-  try {
-    var response = await getflightoffers(req.params.from, req.params.to, req.params.departdate, req.params.returndate, req.params.adult, req.params.children);
-    res.status(200).send(response.data);
-  } catch (responseError) {
-    res.status(responseError.status).send(responseError);
-  }
-  //console.log("Response: "+response);
-
+  await getflightoffers(req.params.from, req.params.to, req.params.departdate, req.params.returndate, req.params.adult, req.params.children, res);
 });
 
-var URL='/:adult/:children';
-for(i=0;i<5;i++){
-  URL+='/:from'+i+'?/'+':to'+i+'?/'+':departdate'+i+'?';
+var URL = '/:adult/:children';
+for (i = 0; i < 5; i++) {
+  URL += '/:from' + i + '?/' + ':to' + i + '?/' + ':departdate' + i + '?';
 }
 
 
-app.get('/flights/multi-city'+URL, async (req, res) => {
+app.get('/flights/multi-city' + URL, async (req, res) => {
   //req.params = JSON.parse(req.params.payload);
   //console.log(req.params);
   var response = {};
-  var flag=0;
-  var error={}
+  var flag = 0;
+  var error = {}
   for (i = 0; i < 5; i++) {
-    if (req.params['from'+i]!==undefined && req.params['to'+i]!==undefined && req.params['departdate'+i]!==undefined) {
+    if (req.params['from' + i] !== undefined && req.params['to' + i] !== undefined && req.params['departdate' + i] !== undefined) {
       try {
-        response['response' + i] =(await getflightoffers(req.params['from'+i], req.params['to'+i], req.params['departdate'+i],null, req.params.adult,
-        req.params.children));
+        response['response' + i] = (await getflightoffers(req.params['from' + i], req.params['to' + i], req.params['departdate' + i], null, req.params.adult,
+          req.params.children));
       } catch (responseError) {
-        flag=1;
+        flag = 1;
         error['error' + i] = responseError;
       }
     }
   }
 
-  if(flag==0){
+  if (flag == 0) {
     res.status(200).send(response);
-  }else{
+  } else {
     res.status(400).send(error);
   }
 
 })
 
-app.listen(3000);
-console.log("Server started on port 3000");
+// http.createServer((req, res) => {
+//   //
+// }).listen(process.env.PORTNUMBER, (err) => {
+//   if (err) {
+//     console.log("Error in starting port");
+//   } else {
+//     console.log("Server started on port 3000");
+//   }
+// });
+
+app.listen(process.env.PORTNUMBER, (err) => {
+  if (err) {
+    console.log("Error in starting port");
+  } else {
+    console.log("Server started on port "+process.env.PORTNUMBER);
+  }
+});
