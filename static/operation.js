@@ -143,7 +143,7 @@ tripval.forEach((element) => {
                 document.querySelector('.search').insertAdjacentElement("beforebegin", newFromToDepart);
             }
             if(multiTripCount<2){
-                document.querySelector("[from-to-depart=from-to-depart_1]").shadowRoot.querySelector('.add').click();
+                document.querySelector("[from-to-depart=from-to-depart_1]").querySelector('.add').click();
             }
         }
         document.querySelector('.search').style.display = "block";

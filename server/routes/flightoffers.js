@@ -1,11 +1,11 @@
 export async function oneWaySearch(tripInformation) {
-    var response=await fetch(`http://127.0.0.1:3000/flights/one-way/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.adult}/${tripInformation.child}`)
+    var response=await fetch(`/flights/one-way/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.adult}/${tripInformation.child}`)
     return {'response0':{'data' :await response.json()}};
 }
 
 
 export async function roundTripSearch(tripInformation) {
-    var response=await fetch(`http://127.0.0.1:3000/flights/round-trip/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.returndate}/${tripInformation.adult}/${tripInformation.child}`)
+    var response=await fetch(`/flights/round-trip/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.returndate}/${tripInformation.adult}/${tripInformation.child}`)
     return {'response0':{'data' :await response.json()}};
 }
 
@@ -20,7 +20,7 @@ export async function multiCitySearch(tripInformation) {
 
     //console.log(URL);
     
-    var response=await fetch(`http://127.0.0.1:3000/flights/multi-city/`+URL)
+    var response=await fetch(`/flights/multi-city/`+URL)
     var data=await response.json();
     return data;
 }

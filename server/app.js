@@ -17,9 +17,10 @@ const amadeus = new Amadeus({
 
 app.use(cors());
 // app.use('/static', express.static('static'));
-app.use('/static', express.static('static'));
-app.use('/', express.static('./static/index.html'));
-app.use('/Assets', express.static('./static/Assets'));
+// console.log(path.join(__dirname,'/routes'));
+app.use('/static', express.static(path.join(__dirname,'../static')));
+app.use('/flights', express.static(path.join(__dirname,'../static/index.html')));
+app.use('/routes',express.static(path.join(__dirname,'/routes')))
 
 app.get('/', (req, res) => {
   res.redirect('/flights');
