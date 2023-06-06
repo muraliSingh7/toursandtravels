@@ -6,7 +6,7 @@ const amadeus = new Amadeus({
 });
 
 async function getAirportLocations(userInput,res){
-    amadeus.client.get('/v1/reference-data/locations',{
+    return amadeus.client.get('/v1/reference-data/locations',{
         keyword:userInput,
         subType:'AIRPORT',
         'page[limit]':100,

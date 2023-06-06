@@ -26,8 +26,8 @@ app.get('/', (req, res) => {
   res.redirect('/flights');
 });
 
-app.get('/airportsearch/:airportname?', (req, res) => {
-  getAirportLocations(req.params.airportname, res);
+app.get('/airportsearch/:airportname?', async(req, res) => {
+  await getAirportLocations(req.params.airportname, res);
 });
 
 
