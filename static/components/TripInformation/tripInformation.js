@@ -452,7 +452,7 @@ class TripInformation extends HTMLElement {
 
     async AirportSearch(query) {
         console.log(query);
-        var response = await fetch(`http://127.0.0.1:3000/airportsearch/${query}`)
+        var response = await fetch(`/airportsearch/${query}`)
         var data = await response.json();
         data = data.data;
         return data;

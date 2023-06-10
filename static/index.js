@@ -6,11 +6,6 @@ import { MultiTripHandler } from './views/MultiTripHandler.js'
 
 
 
-
-var iatacodefetchtime = Date.now();
-
-
-
 addEventListener('DOMContentLoaded', (event) => {
     var form = document.querySelector("#flight-search");
     form.addEventListener("submit", async function (event) {
