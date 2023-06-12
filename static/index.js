@@ -33,7 +33,7 @@ addEventListener('DOMContentLoaded', (event) => {
                 let returndate =new Date(listOfTripInformationElement[i].shadowRoot.querySelector("input[name=ReturnDate]").value);
                 let adult = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=Adult]").value;
                 let child = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=Children]").value;
-                tripInformation['returndate'] = returndate.toString('yyyy-MM-dd');
+                tripInformation['returndate'] = returndate.toISOString().split('T')[0];
                 tripInformation['adult'] = adult.trim();
                 tripInformation['child'] = child.trim();
 
