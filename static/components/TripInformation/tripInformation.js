@@ -18,7 +18,7 @@ template.innerHTML = `
                         </div>
                         <div name="addDeleteButton">
                             <button id="add" class="add" >+</button>
-                            <button id="delete" class="delete" >-</button>
+                            <button id="delete" class="delete" >x</button>
                         </div>
                         <div name="returnDateContainer">
                             <label for="ReturnDate" id="ReturnDate" class="returndate" >Return : </label>

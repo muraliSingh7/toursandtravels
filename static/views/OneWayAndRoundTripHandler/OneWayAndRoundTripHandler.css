@@ -5,8 +5,8 @@
     justify-content: flex-start;
     align-items: stretch;
     row-gap: 5px;
-    border-style: solid;
-    border-color: green;
+    border: 2px solid #00FF40;
+    box-shadow: 0 0 4px #fff, inset 0 0 4px #fff, 0 0 8px #00FF40, inset 0 0 8px #00FF40;
     margin-top:5px;
 
 }
@@ -54,7 +54,8 @@
     border-style: solid;
     border-width: 2px;
     border-radius: 20px;
-    border-color: blue;
+    border: 2px solid #F7CAC9;
+    box-shadow: 0 0 4px #fff, inset 0 0 4px #fff, 0 0 8px #F7CAC9, inset 0 0 8px #F7CAC9;
 }
 
 
@@ -67,6 +68,13 @@
     font-weight: 790;
     margin: 15px 0px 5px 20px;
     font-family: 'Lato', sans-serif;
+    color:white;
+    background: #FDC830;
+    background: -webkit-linear-gradient(to right, #F37335, #FDC830);
+    background: linear-gradient(to right, #F37335, #FDC830);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
 }
 
 .timeIntervalButtonBeforeClicked {
@@ -85,8 +93,8 @@
     border-style: solid;
     border-width: 2px;
     border-radius: 10px;
-    border-color: green;
-    background-color: green;
+    border-color: #f5df4d;
+    background-color: #f5df4d;
 }
 
 .timeIntervalTitle {
@@ -111,6 +119,7 @@
     margin: 5px 0px 5px 20px;
     display: flex;
     justify-content: space-between;
+    color:white;
 }
 
 .titlelabel {

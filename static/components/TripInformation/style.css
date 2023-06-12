@@ -1,8 +1,9 @@
 .fromToDepartContainer {
     display: none;
-    color: blue;
     font-size: 20px;
-    font-family: Georgia, serif;
+    text-shadow: 0 0 5px #ffa500, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 40px #ffa500, 0 0 60px #ff0000, 0 0 10px #ff8d00, 0 0 98px #ff0000;
+      color: #fff6a9;
+    font-family: "Sacramento", cursive;
 }
 
 .oneWay {
@@ -17,7 +18,7 @@
 
 .multiCity {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
 }
 
 /* .fromtodepartDatelabel{
@@ -25,17 +26,33 @@
 } */
 
 /* .from{
-    display:inline-block;
-    margin:5px 20px 5px 5px;
+   
 }
 .to{
-    display:inline-block;
-    margin:5px 20px 5px 5px;
+    
 }
 .departDate{
-    display: inline-block;
-    margin:5px 20px 5px 5px;
+    
 } */
+
+input{
+    padding: 5px;
+    font-size: 18px;
+    /* border-color: red;
+    margin: 5px;
+    border-style: solid; */
+    margin: 5px;
+    border:none;
+    box-sizing: border-box;
+    box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #0ff, 0 0 12px #0ff, 0 0 20px #0ff;
+    
+}
+
+input:focus {
+    outline: none;
+    border: solid 2px cyan;
+}
+
 
 .fromOneWay {
     grid-row: 1/2;
@@ -104,14 +121,28 @@
 
 .addButtonShow {
     display: inline-block;
+    border-radius: 50%;
+    font-size: 25px;
+    color: #66FF00;
+    border: solid #66FF00;
+    background-color: darkgreen;
+    box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #66FF00, 0 0 12px #66FF00, 0 0 20px #66FF00;
+    margin-right: 10px;
 }
 
 .addButtonHide {
     display: none;
+    padding: 10px;
 }
 
 .deleteButtonShow {
     display: inline-block;
+    border-radius: 50%;
+    font-size: 25px;
+    color: #FF3131;
+    border: solid #FF3131;
+    background-color: darkred;
+    box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #FF3131, 0 0 12px #FF3131, 0 0 20px #FF3131;
 }
 
 .deleteButtonHide {
@@ -119,9 +150,10 @@
 }
 
 .adultAndChildLabel {
-    color: blue;
     font-size: 20px;
-    font-family: Georgia, serif;
+    text-shadow: 0 0 5px #ffa500, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 40px #ffa500, 0 0 60px #ff0000, 0 0 10px #ff8d00, 0 0 98px #ff0000;
+      color: #fff6a9;
+    font-family: "Sacramento", cursive;
 }
 
 .adultInput,
