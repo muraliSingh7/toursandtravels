@@ -26,6 +26,7 @@ export function MultiTripHandler(triptype, tripInformation, tripFlightData){
         document.querySelector('[name=tripDescription]').remove();
         document.querySelector('[name=tripTitle]').appendChild(tripHeader[tripNumber - 1]);
         multiCityView[tripNumber - 1].main();
+        clearAllTripDataViewElement();
       });
       tripDescription.appendChild(prevButton)
     }
@@ -52,12 +53,13 @@ export function MultiTripHandler(triptype, tripInformation, tripFlightData){
     if (tripNumber != tripFlightData.length - 1) {
       let nextButton = document.createElement("span");
       nextButton.setAttribute("class", "nextButtonTripDescription");
-      nextButton.setAttribute("prevButtonName", "nextButton" + tripNumber);
+      nextButton.setAttribute("nextButtonName", "nextButton" + tripNumber);
       nextButton.textContent = String.fromCodePoint(0x203a);
       nextButton.addEventListener('click', () => {
         document.querySelector('[name=tripDescription]').remove();
         document.querySelector('[name=tripTitle]').appendChild(tripHeader[tripNumber + 1]);
         multiCityView[tripNumber + 1].main();
+        clearAllTripDataViewElement();
       });
       tripDescription.appendChild(nextButton);
     }
@@ -73,3 +75,9 @@ export function MultiTripHandler(triptype, tripInformation, tripFlightData){
 
 }
 
+function clearAllTripDataViewElement(){
+  let tripFlightDataViewElementList=document.body.querySelectorAll('[name=tripFlightDataView]');
+  for (let i = 1; i < tripFlightDataViewElementList.length; i++) {
+    tripFlightDataViewElementList[i].remove();
+  }
+}

@@ -21,26 +21,46 @@ addEventListener('DOMContentLoaded', (event) => {
         for (let i = 0; i < listOfTripInformationElement.length; i++) {
             let source = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=From]").value;
             let destination = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=To]").value;
-            let departdate = new Date(listOfTripInformationElement[i].shadowRoot.querySelector("input[name=DepartDate]").value);
+            let departdate=listOfTripInformationElement[i].shadowRoot.querySelector("input[name=DepartDate]").value;
+            let currentdate = new Date();
+            // console.log(departdate);
+
+            if(departdate==='' || isNaN(Date.parse(departdate))){
+                departdate='';
+            }else{
+                departdate = new Date(departdate);
+                if (departdate.getTime() < currentdate.getTime()) {
+                    displayErrorInViewArea("Depart Date should be greater than or equal to Today Date");
+                    return;
+                }
+            }
+
             tripInformation["trip" + i] = {
                 'source': source.trim(),
                 'destination': destination.trim(),
-                'departdate': departdate.toISOString().split('T')[0]
+                'departdate':  departdate!=''?departdate.toISOString().split('T')[0]:departdate
             };
 
-
+            
             if (i == listOfTripInformationElement.length - 1) {
-                let returndate =new Date(listOfTripInformationElement[i].shadowRoot.querySelector("input[name=ReturnDate]").value);
                 let adult = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=Adult]").value;
                 let child = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=Children]").value;
-                tripInformation['returndate'] = returndate.toISOString().split('T')[0];
+                let returndate =listOfTripInformationElement[i].shadowRoot.querySelector("input[name=ReturnDate]").value;
                 tripInformation['adult'] = adult.trim();
                 tripInformation['child'] = child.trim();
-
-                if (departdate.getTime() >= returndate.getTime()) {
-                    displayErrorInViewArea("Return Date should be greater than or equal to Depart Date");
-                    return;
+                if (tripType == "Round-Trip") {
+                    if(returndate==='' || isNaN(Date.parse(returndate))){
+                        returndate='';
+                    }else{
+                        returndate = new Date(returndate);
+                        tripInformation['returndate'] = returndate.toISOString().split('T')[0];
+                        if (departdate!='' && departdate.getTime() > returndate.getTime()) {
+                            displayErrorInViewArea("Return Date should be greater than or equal to Depart Date");
+                            return;
+                        }
+                    }
                 }
+
             }
 
             //checking all input fields are filled or not
@@ -71,17 +91,15 @@ addEventListener('DOMContentLoaded', (event) => {
             }
 
 
-            
+
         }
 
 
         clearViewArea();
         localStorage.clear();
         if (tripType == "One-Way") {
-            let oneWaySearchResult = await oneWaySearch(tripInformation);
+            let oneWaySearchResult = await processingData(await oneWaySearch(tripInformation));
             // console.log(oneWaySearchResult);
-            oneWaySearchResult = await processingData(oneWaySearchResult);
-            // console.log(finalResult);
             localStorage.setItem("oneWaySearchResult", JSON.stringify(oneWaySearchResult));
             let oneWayViewHandler = new OneWayAndRoundTripHandler(tripType, 0, tripInformation.trip0.source, tripInformation.trip0.destination, JSON.parse(localStorage.getItem("oneWaySearchResult"))[0]);
             oneWayViewHandler.main();
@@ -93,10 +111,11 @@ addEventListener('DOMContentLoaded', (event) => {
             roundTripViewHandler.main();
         } else {
             let multiCitySearchResult = await multiCitySearch(tripInformation);
-            // console.log(multiCitySearchResult);
+            console.log(multiCitySearchResult);
             multiCitySearchResult = await processingData(multiCitySearchResult);
             localStorage.setItem("multiCitySearchResult", JSON.stringify(multiCitySearchResult));
             MultiTripHandler(tripType, tripInformation, JSON.parse(localStorage.getItem("multiCitySearchResult")));
+
         }
     });
 

@@ -1,11 +1,11 @@
 export async function processingData(result) {
     let flightResult = [];
-    // console.log(result);
+    // console.log(Object.keys(result).length);
 
     
     for (let responseNumber = 0; responseNumber < Object.keys(result).length; responseNumber++) {
-        let flightDetails = result['response' + responseNumber].data;
-        // console.log(flightDetails);
+        let flightDetails = result['response' + responseNumber];
+        console.log(flightDetails);
         flightResult.push([]);
         for (let flightResultNumber = 0; flightResultNumber < flightDetails.length; flightResultNumber++) {
             flightResult[responseNumber].push({});

@@ -33,12 +33,27 @@ app.get('/airportsearch/:airportname?', async(req, res) => {
 
 app.get('/flights/one-way/:from/:to/:departdate/:adult/:children', async (req, res) => {
   //console.log(req.params);
-  await getflightoffers(req.params.from, req.params.to, req.params.departdate, null, req.params.adult, req.params.children, res);
+  let response=await getflightoffers(req.params.from, req.params.to, req.params.departdate, null, req.params.adult, req.params.children);
+  if(response.data){
+    let result={};
+    result['response0']=response.data;
+    res.status(200).send(result);
+  }else{
+    res.status(502).send("Bad Gateway");
+  }
 });
 
 app.get('/flights/round-trip/:from/:to/:departdate/:returndate/:adult/:children', async (req, res) => {
   //console.log("Params: "+req.params);
-  await getflightoffers(req.params.from, req.params.to, req.params.departdate, req.params.returndate, req.params.adult, req.params.children, res);
+  let response=await getflightoffers(req.params.from, req.params.to, req.params.departdate, req.params.returndate, req.params.adult, req.params.children);
+  if(response.data){
+    let result={};
+    result['response0']=response.data;
+    res.status(200).send(result);
+  }else{
+    res.status(502).send("Bad Gateway");
+  }
+
 });
 
 var URL = '/:adult/:children';
@@ -50,28 +65,29 @@ for (i = 0; i < 5; i++) {
 app.get('/flights/multi-city' + URL, async (req, res) => {
   //req.params = JSON.parse(req.params.payload);
   //console.log(req.params);
-  var response = {};
-  var flag = 0;
-  var error = {}
+  let result = {};
+  let flag = 0;
+  let error = {}
   for (i = 0; i < 5; i++) {
     if (req.params['from' + i] !== undefined && req.params['to' + i] !== undefined && req.params['departdate' + i] !== undefined) {
-      try {
-        response['response' + i] = (await getflightoffers(req.params['from' + i], req.params['to' + i], req.params['departdate' + i], null, req.params.adult,
+        let response = (await getflightoffers(req.params['from' + i], req.params['to' + i], req.params['departdate' + i], null, req.params.adult,
           req.params.children));
-      } catch (responseError) {
-        flag = 1;
-        error['error' + i] = responseError;
-      }
+        if(response.data){
+          result['response'+i]=response.data;
+        }else{
+          flag = 1;
+          error['error' + i] = "Bad Gateway";
+        }
     }
   }
 
   if (flag == 0) {
-    res.status(200).send(response);
+    res.status(200).send(result);
   } else {
-    res.status(400).send(error);
+    res.status(502).send(error);
   }
 
-})
+});
 
 // http.createServer((req, res) => {
 //   //

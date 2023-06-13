@@ -1,12 +1,14 @@
 export async function oneWaySearch(tripInformation) {
     var response=await fetch(`/flights/one-way/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.adult}/${tripInformation.child}`)
-    return {'response0':{'data' :await response.json()}};
+    var data=await response.json();
+    return data;
 }
 
 
 export async function roundTripSearch(tripInformation) {
     var response=await fetch(`/flights/round-trip/${tripInformation.trip0.source}/${tripInformation.trip0.destination}/${tripInformation.trip0.departdate}/${tripInformation.returndate}/${tripInformation.adult}/${tripInformation.child}`)
-    return {'response0':{'data' :await response.json()}};
+    var data=await response.json();
+    return data;
 }
 
 
