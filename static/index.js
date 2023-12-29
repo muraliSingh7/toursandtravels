@@ -1,6 +1,6 @@
 import { getTripType } from './commonfunctions/triptype.js';
 import { processingData } from './processingdata.js';
-import { oneWaySearch, roundTripSearch, multiCitySearch } from '/routes/flightoffers.js' //line number 23 of app.use('') in app.js
+import { oneWaySearch, roundTripSearch, multiCitySearch } from './routes/flightoffers.js';
 import { OneWayAndRoundTripHandler } from './views/OneWayAndRoundTripHandler/OneWayAndRoundTripHandler.js'
 import { MultiTripHandler } from './views/MultiTripHandler.js'
 

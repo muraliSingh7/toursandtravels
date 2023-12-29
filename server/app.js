@@ -20,7 +20,6 @@ app.use(cors());
 // console.log(path.join(__dirname,'/routes'));
 app.use('/static', express.static(path.join(__dirname,'../static')));
 app.use('/flights', express.static(path.join(__dirname,'../static/index.html')));
-app.use('/routes',express.static(path.join(__dirname,'/routes')))
 
 app.get('/', (req, res) => {
   res.redirect('/flights');
