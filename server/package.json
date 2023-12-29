@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "type": "module",
+  "author": "Murali Singh",
   "scripts": {
     "start": "node app.js"
   },
