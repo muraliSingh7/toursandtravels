@@ -149,10 +149,11 @@ export class OneWayAndRoundTripHandler {
             let checkBoxForStop = document.createElement('input');
             checkBoxForStop.setAttribute('type', 'checkbox');
             checkBoxForStop.setAttribute('name', stopNumber + '-Stop');
+            checkBoxForStop.setAttribute('id', stopNumber + '-Stop');
 
 
             let labelForStop = document.createElement('label');
-            labelForStop.setAttribute('for', stopNumber + ' Stop');
+            labelForStop.setAttribute('for', stopNumber + '-Stop');
             labelForStop.setAttribute('class', 'titlelabel');
             if (stopNumber == 0) {
                 labelForStop.textContent = "Non-Stop (" + filterResult[stopNumber]['numberOfFlights'] + ")";
@@ -304,6 +305,7 @@ export class OneWayAndRoundTripHandler {
             let checkboxForAirline = document.createElement('input');
             checkboxForAirline.setAttribute('type', 'checkbox');
             checkboxForAirline.setAttribute('name', airlineCode);
+            checkboxForAirline.setAttribute('id', airlineCode);
 
 
             let labelForAirline = document.createElement('label');

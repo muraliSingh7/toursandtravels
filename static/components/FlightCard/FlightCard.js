@@ -19,7 +19,7 @@ oneTripDetailTemplate.innerHTML = `<div class="flex-row">
     ;
 
 FlightCardTemplate.innerHTML =
-    `<link rel="stylesheet" href="static/components/FlightCard/FlightCard.css">
+    `<link rel="stylesheet" href="/static/components/FlightCard/FlightCard.css">
         <div class="card">
             <header class="carrier-name" name="carrier-name"></header>
             <table>

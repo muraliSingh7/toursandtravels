@@ -1,31 +1,31 @@
 const template = document.createElement("template");
 template.innerHTML = `
-                    <link rel="stylesheet" href="static/components/TripInformation/style.css">
+                    <link rel="stylesheet" href="/static/components/TripInformation/style.css">
                     <div class="fromToDepartContainer">
                         <div name="from">
-                            <label for="from" id="from" class="fromtodepartlabel">From : </label>
-                            <input type="text" class="from" name="From" required>
+                            <label for="from" class="fromtodepartlabel">From : </label>
+                            <input type="text" class="from" name="From" id="from" required>
                             <div class="autoCompleteContainer"></div>
                         </div>
                         <div name="to">
-                            <label for="to" id="to" class="fromtodepartlabel">To : </label>
-                            <input type="text" class="to" name="To" required>
+                            <label for="to" class="fromtodepartlabel">To : </label>
+                            <input type="text" class="to" name="To" id="to" required>
                             <div class="autoCompleteContainer"></div>
                         </div>
                         <div name="departDateContainer">
-                            <label for="depart" id="depart" class="fromtodepartlabel">Depart : </label>
-                            <input type="date" class="depart" name="DepartDate" required>
+                            <label for="depart" class="fromtodepartlabel">Depart : </label>
+                            <input type="date" class="depart" name="DepartDate" id="depart" required>
                         </div>
                         <div name="addDeleteButton">
                             <button id="add" class="add" >+</button>
                             <button id="delete" class="delete" >x</button>
                         </div>
                         <div name="returnDateContainer">
-                            <label for="ReturnDate" id="ReturnDate" class="returndate" >Return : </label>
-                            <input class="returninput" type="date" name="ReturnDate" required>
+                            <label for="ReturnDate" class="returndate" >Return : </label>
+                            <input class="returninput" type="date" name="ReturnDate" id="ReturnDate" required>
                         </div>
                         <div name="adult">
-                            <label for="Adult" id="Adult" class="adultAndChildLabel" >Adult : </label>
+                            <label for="Adult" class="adultAndChildLabel" >Adult : </label>
                             <input type="number" id="Adult" name="Adult" min="1" max="5" class="adultinput" required>
                         </div>
                         <div name="child">

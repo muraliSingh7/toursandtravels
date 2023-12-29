@@ -5,17 +5,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Explore oneway, round-trip, and multiway travel options with our easy-to-use platform. Find the best deals and fly to your destination stress-free.">
     <title>Flight Search</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="static/views/OneWayAndRoundTripHandler/OneWayAndRoundTripHandler.css">
+    <link rel="stylesheet" href="/static/views/OneWayAndRoundTripHandler/OneWayAndRoundTripHandler.css">
 </head>
 
 <body>
     <header>
         <div class="navbar">
-            <img src="/static/Assets/logo.png" class="logo">
+            <img src="/static/Assets/logo.png" class="logo" alt="Singh Tours And Travels">
             <!-- <a href="#">
                 <button class="nav-button">
                     <i class="material-icons md-3">explore</i>
@@ -38,11 +40,11 @@
     </header>
     <div class="boxform">
         <form id="flight-search">
-            <input class="triptype" type="radio" name="Trip-Type" value="One-Way">
+            <input class="triptype" type="radio" name="Trip-Type" id="One-Way" value="One-Way">
             <label class="triptypelabels" for="One-Way">One Way</label>
-            <input class="triptype" type="radio" name="Trip-Type" value="Round-Trip">
+            <input class="triptype" type="radio" name="Trip-Type" id="Round-Trip" value="Round-Trip">
             <label class="triptypelabels" for="Round-Trip">Round Trip</label>
-            <input class="triptype" type="radio" name="Trip-Type" value="Multi-City">
+            <input class="triptype" type="radio" name="Trip-Type" id="Multi-City" value="Multi-City">
             <label class="triptypelabels" for="Multi-City">Multi City</label><br>
             <button class="search" type="submit">Search</button>
         </form>

@@ -21,13 +21,13 @@ addEventListener('DOMContentLoaded', (event) => {
         for (let i = 0; i < listOfTripInformationElement.length; i++) {
             let source = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=From]").value;
             let destination = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=To]").value;
-            let departdate=listOfTripInformationElement[i].shadowRoot.querySelector("input[name=DepartDate]").value;
+            let departdate = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=DepartDate]").value;
             let currentdate = new Date();
             // console.log(departdate);
 
-            if(departdate==='' || isNaN(Date.parse(departdate))){
-                departdate='';
-            }else{
+            if (departdate === '' || isNaN(Date.parse(departdate))) {
+                departdate = '';
+            } else {
                 departdate = new Date(departdate);
                 if (departdate.getTime() < currentdate.getTime()) {
                     displayErrorInViewArea("Depart Date should be greater than or equal to Today Date");
@@ -38,23 +38,23 @@ addEventListener('DOMContentLoaded', (event) => {
             tripInformation["trip" + i] = {
                 'source': source.trim(),
                 'destination': destination.trim(),
-                'departdate':  departdate!=''?departdate.toISOString().split('T')[0]:departdate
+                'departdate': departdate != '' ? departdate.toISOString().split('T')[0] : departdate
             };
 
-            
+
             if (i == listOfTripInformationElement.length - 1) {
                 let adult = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=Adult]").value;
                 let child = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=Children]").value;
-                let returndate =listOfTripInformationElement[i].shadowRoot.querySelector("input[name=ReturnDate]").value;
+                let returndate = listOfTripInformationElement[i].shadowRoot.querySelector("input[name=ReturnDate]").value;
                 tripInformation['adult'] = adult.trim();
                 tripInformation['child'] = child.trim();
                 if (tripType == "Round-Trip") {
-                    if(returndate==='' || isNaN(Date.parse(returndate))){
-                        returndate='';
-                    }else{
+                    if (returndate === '' || isNaN(Date.parse(returndate))) {
+                        returndate = '';
+                    } else {
                         returndate = new Date(returndate);
                         tripInformation['returndate'] = returndate.toISOString().split('T')[0];
-                        if (departdate!='' && departdate.getTime() > returndate.getTime()) {
+                        if (departdate != '' && departdate.getTime() > returndate.getTime()) {
                             displayErrorInViewArea("Return Date should be greater than or equal to Depart Date");
                             return;
                         }
