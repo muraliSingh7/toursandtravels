@@ -1,241 +1,324 @@
 .fromToDepartContainer {
-    display: none;
-    font-size: 20px;
-    text-shadow: 0 0 5px #ffa500, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 40px #ffa500, 0 0 60px #ff0000, 0 0 10px #ff8d00, 0 0 98px #ff0000;
-      color: #fff6a9;
-    font-family: "Sacramento", cursive;
-}
-
-.oneWay {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-}
-
-.roundTrip {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: none;
+  font-size: 20px;
+  color: greenyellow;
 }
 
 .multiCity {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 0.5fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 0.5fr;
 }
 
-/* .fromtodepartDatelabel{
-    display: inline-block;
-} */
-
-/* .from{
-   
-}
-.to{
-    
-}
-.departDate{
-    
-} */
-
-input{
-    padding: 5px;
-    font-size: 18px;
-    /* border-color: red;
-    margin: 5px;
-    border-style: solid; */
-    margin: 5px;
-    border:none;
-    box-sizing: border-box;
-    box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #0ff, 0 0 12px #0ff, 0 0 20px #0ff;
-    
+input {
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  border-color: #4b5563;
+  margin: 0.25rem;
+  box-sizing: border-box;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #ffffff;
+  background-color: #374151;
 }
 
 input:focus {
-    outline: none;
-    border: solid 2px cyan;
-}
-
-
-.fromOneWay {
-    grid-row: 1/2;
-    grid-column: 1/3;
-}
-
-.toOneWay {
-    grid-row: 1/2;
-    grid-column: 2/3;
-}
-
-.departDateOneWay {
-    grid-row: 1/2;
-    grid-column: 3/3;
-}
-
-.fromRoundTrip {
-    grid-row: 1/2;
-    grid-column: 1/2;
-}
-
-.toRoundTrip {
-    grid-row: 1/2;
-    grid-column: 2/2;
-}
-
-.departDateRoundTrip {
-    grid-row: 2/2;
-    grid-column: 1/2;
-}
-
-.returnDateRoundTrip {
-    grid-row: 2/2;
-    grid-column: 2/2;
+  outline: 2px solid #22c55e;
+  border-color: #22c55e;
 }
 
 .fromMultiCity {
-    grid-row: 1;
-    grid-column: 1/4;
+  grid-row: 1;
+  grid-column: 1/4;
 }
 
 .toMultiCity {
-    grid-row: 1;
-    grid-column: 2/4;
+  grid-row: 1;
+  grid-column: 2/4;
 }
 
 .departDateMultiCity {
-    grid-row: 1;
-    grid-column: 3/4;
+  grid-row: 1;
+  grid-column: 3/4;
 }
 
 .returnDateMultiCity,
 .returnDateOneWay {
-    display: none;
+  display: none;
 }
 
 .addDeleteButtonOneWay,
 .addDeleteButtonRoundTrip {
-    display: none;
+  display: none;
 }
 
 .addDeleteButtonMultiCity {
+  grid-row: 1;
+  grid-column: 4/4;
+}
+
+@media screen and (max-width: 425px) {
+  .oneWay {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto 1fr;
+  }
+
+  .roundTrip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto 1fr;
+  }
+
+  .multiCity {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fromOneWay,
+  .fromRoundTrip {
     grid-row: 1;
-    grid-column: 4/4;
+    grid-column: 1 / -1;
+  }
+
+  .toOneWay,
+  .toRoundTrip {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+
+  .departDateOneWay,
+  .departDateRoundTrip {
+    grid-row: 3;
+    grid-column: 1 / -1;
+  }
+
+  .returnDateRoundTrip {
+    display: block;
+    grid-row: 4;
+    grid-column: 1 / -1;
+  }
+
+  .adultOneWay{
+    grid-row: 4;
+    grid-column: 1;
+  }
+
+  .adultRoundTrip{
+    grid-row: 5;
+    grid-column: 1;
+  }
+  
+  .childOneWay{
+    grid-row: 4;
+    grid-column: 2;
+  }
+
+  .childRoundTrip{
+    grid-row: 5;
+    grid-column: 2;
+  }
+}
+
+@media screen and (min-width: 425px) and (max-width: 768px) {
+  .oneWay,.roundTrip{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .fromOneWay,.fromRoundTrip {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .toOneWay,.roundTrip {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .departDateOneWay {
+    grid-row: 2;
+    grid-column: 1/-1;
+  }
+
+  .departDateRoundTrip {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  .returnDateRoundTrip {
+    grid-row: 2;
+    grid-column: 2;
+  }
+
+  .adultOneWay {
+    grid-row: 3;
+    grid-column: 1;
+  }
+
+  .childOneWay {
+    grid-row: 3;
+    grid-column: 2;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .oneWay {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .roundTrip {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+
+  .fromOneWay,.fromRoundTrip {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .toOneWay,.toRoundTrip {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .departDateOneWay {
+    grid-row: 1;
+    grid-column: 3;
+  }
+
+  .departDateRoundTrip {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  .returnDateRoundTrip {
+    grid-row: 2;
+    grid-column: 2;
+  }
+
+  .adultOneWay {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  .adultRoundTrip {
+    grid-row: 3;
+    grid-column: 1;
+  }
+
+  .childOneWay {
+    grid-row: 2;
+    grid-column: 2;
+  }
+
+  .childRoundTrip {
+    grid-row: 3;
+    grid-column: 2;
+  }
 }
 
 .addButtonShow {
-    display: inline-block;
-    border-radius: 50%;
-    font-size: 25px;
-    color: #66FF00;
-    border: solid #66FF00;
-    background-color: darkgreen;
-    box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #66FF00, 0 0 12px #66FF00, 0 0 20px #66FF00;
-    margin-right: 10px;
+  display: inline-block;
+  border-radius: 50%;
+  font-size: 25px;
+  color: #66ff00;
+  border: solid #66ff00;
+  background-color: darkgreen;
+  box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #66ff00, 0 0 12px #66ff00,
+    0 0 20px #66ff00;
+  margin-right: 10px;
 }
 
 .addButtonHide {
-    display: none;
-    padding: 10px;
+  display: none;
+  padding: 10px;
 }
 
 .deleteButtonShow {
-    display: inline-block;
-    border-radius: 50%;
-    font-size: 25px;
-    color: #FF3131;
-    border: solid #FF3131;
-    background-color: darkred;
-    box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #FF3131, 0 0 12px #FF3131, 0 0 20px #FF3131;
+  display: inline-block;
+  border-radius: 50%;
+  font-size: 25px;
+  color: #ff3131;
+  border: solid #ff3131;
+  background-color: darkred;
+  box-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 8px #ff3131, 0 0 12px #ff3131,
+    0 0 20px #ff3131;
 }
 
 .deleteButtonHide {
-    display: none;
+  display: none;
 }
 
 .adultAndChildLabel {
-    font-size: 20px;
-    text-shadow: 0 0 5px #ffa500, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 40px #ffa500, 0 0 60px #ff0000, 0 0 10px #ff8d00, 0 0 98px #ff0000;
-      color: #fff6a9;
-    font-family: "Sacramento", cursive;
+  font-size: 20px;
+  color: greenyellow;
 }
 
 .adultInput,
 .childInput {
-    background-color: white;
-    border-radius: 50%;
-    border-color: blue;
-}
-
-.adultOneWay {
-    grid-row: 2/2;
-    grid-column: 1/3;
-}
-
-.childOneWay {
-    grid-row: 2/2;
-    grid-column: 2/3;
-}
-
-.adultRoundTrip {
-    grid-row: 3/3;
-    grid-column: 1/2;
-}
-
-.childRoundTrip {
-    grid-row: 3/3;
-    grid-column: 2/2;
+  background-color: white;
+  border-radius: 50%;
+  border-color: blue;
 }
 
 .adultMultiCityShow {
-    display: block;
-    grid-row: 2;
-    grid-column: 1/4;
+  display: block;
+  grid-row: 2;
+  grid-column: 1/4;
 }
 
 .childMultiCityShow {
-    display: block;
-    grid-row: 2;
-    grid-column: 2/4;
+  display: block;
+  grid-row: 2;
+  grid-column: 2/4;
 }
 
 .adultMultiCityHide,
 .childMultiCityHide {
-    display: none;
+  display: none;
 }
 
 .autoCompleteFormContainerShow {
-    padding: 10px 8px;
-    opacity: 1;
-    pointer-events: auto;
-
+  padding: 10px 8px;
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.autoCompleteFormContainerShow>ul{
-    width: 180px;
-    margin-block: 0px;
-    padding-inline: 45px;
+.autoCompleteFormContainerShow > ul {
+  width: 180px;
+  margin-block: 0px;
+  padding-inline: 45px;
 }
 
 .autoCompleteFormContainerHide {
-    display:none;
-    padding: 0;
-    opacity: 0;
-    pointer-events: none;
-    max-height: 280px;
-    overflow-y: auto;
+  display: none;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+  max-height: 280px;
+  overflow-y: auto;
 }
 
 .listItemShow {
-    font-size:16px;
-    list-style: none;
-    padding: 8px 12px;
-    display: block;
-    width: 100%;
-    cursor: default;
-    border-radius: 3px;
+  font-size: 16px;
+  list-style: none;
+  padding: 8px 12px;
+  display: block;
+  width: 100%;
+  cursor: default;
+  border-radius: 3px;
 }
 
 .listItemHide {
-    display: block;
+  display: block;
 }
 
 .listItemShow:hover {
-    background: #efefef;
+  background: darkgreen;
+  border-radius: 5px;
 }

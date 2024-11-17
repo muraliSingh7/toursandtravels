@@ -1,13 +1,12 @@
 const Amadeus = require('amadeus');
 const express = require("express");
 const app = express()
-const http = require('http');
 const path=require('path');
 const cors = require('cors');
 require('dotenv').config();
 
-const getflightoffers = require('./function_api/getflightoffers.js');
-const getAirportLocations = require('./function_api/getAirportLocations.js');
+const getFlightOffers = require('./api_functions/getFlightOffers.js');
+const getAirportLocations = require('./api_functions/getAirportLocations.js');
 
 const amadeus = new Amadeus({
   clientId: process.env.CLIENTID,
@@ -16,8 +15,6 @@ const amadeus = new Amadeus({
 
 
 app.use(cors());
-// app.use('/static', express.static('static'));
-// console.log(path.join(__dirname,'/routes'));
 app.use('/static', express.static(path.join(__dirname,'../static')));
 app.use('/flights', express.static(path.join(__dirname,'../static/index.html')));
 
@@ -32,7 +29,7 @@ app.get('/airportsearch/:airportname?', async(req, res) => {
 
 app.get('/flights/one-way/:from/:to/:departdate/:adult/:children', async (req, res) => {
   //console.log(req.params);
-  let response=await getflightoffers(req.params.from, req.params.to, req.params.departdate, null, req.params.adult, req.params.children);
+  let response=await getFlightOffers(req.params.from, req.params.to, req.params.departdate, null, req.params.adult, req.params.children);
   if(response.data){
     let result={};
     result['response0']=response.data;
@@ -44,7 +41,7 @@ app.get('/flights/one-way/:from/:to/:departdate/:adult/:children', async (req, r
 
 app.get('/flights/round-trip/:from/:to/:departdate/:returndate/:adult/:children', async (req, res) => {
   //console.log("Params: "+req.params);
-  let response=await getflightoffers(req.params.from, req.params.to, req.params.departdate, req.params.returndate, req.params.adult, req.params.children);
+  let response=await getFlightOffers(req.params.from, req.params.to, req.params.departdate, req.params.returndate, req.params.adult, req.params.children);
   if(response.data){
     let result={};
     result['response0']=response.data;
@@ -69,7 +66,7 @@ app.get('/flights/multi-city' + URL, async (req, res) => {
   let error = {}
   for (i = 0; i < 5; i++) {
     if (req.params['from' + i] !== undefined && req.params['to' + i] !== undefined && req.params['departdate' + i] !== undefined) {
-        let response = (await getflightoffers(req.params['from' + i], req.params['to' + i], req.params['departdate' + i], null, req.params.adult,
+        let response = (await getFlightOffers(req.params['from' + i], req.params['to' + i], req.params['departdate' + i], null, req.params.adult,
           req.params.children));
         if(response.data){
           result['response'+i]=response.data;
@@ -88,15 +85,6 @@ app.get('/flights/multi-city' + URL, async (req, res) => {
 
 });
 
-// http.createServer((req, res) => {
-//   //
-// }).listen(process.env.PORTNUMBER, (err) => {
-//   if (err) {
-//     console.log("Error in starting port");
-//   } else {
-//     console.log("Server started on port 3000");
-//   }
-// });
 
 app.listen(process.env.PORTNUMBER, (err) => {
   if (err) {

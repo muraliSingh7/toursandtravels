@@ -5,7 +5,7 @@ const amadeus = new Amadeus({
     clientSecret: process.env.CLIENTSECRET
 });
 
-async function getflightoffers(originLocationCode, destinationLocationCode, departureDate, returnDate, adults, children,res) {
+async function getFlightOffers(originLocationCode, destinationLocationCode, departureDate, returnDate, adults, children,res) {
 
     if (returnDate) {
         // console.log("Round-Trip");
@@ -46,4 +46,4 @@ async function getflightoffers(originLocationCode, destinationLocationCode, depa
     }
 }
 
-module.exports = getflightoffers;
+module.exports = getFlightOffers;
